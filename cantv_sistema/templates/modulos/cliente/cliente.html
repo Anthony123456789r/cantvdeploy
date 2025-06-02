@@ -1,0 +1,31 @@
+{% extends "modulos/plantillaModuleUser.html" %}
+{% block titulo %} Panel principal{% endblock %}
+{% block content %}
+
+<h1>Bienvenido a tu panel principal {{cliente}}</h1>
+<h2>informacion basica</h2>
+<div class="table-responsive">
+    <table class="table table-primary">
+        <thead>
+            <tr>
+                <th scope="col">Nombre</th>
+                <th scope="col">Apellido</th>
+                <th scope="col">C.I</th>
+                <th scope="col">Direccion</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for datos in datos_cliente %}
+            <tr>
+                <td scope="row">{{datos.nombre}}</td>
+                <td scope="row">{{datos.apellido}}</td>
+                <td scope="row">{{datos.cedula}}</td>
+                <td scope="row">{{datos.direccion}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+{% endblock %}

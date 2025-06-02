@@ -1,0 +1,92 @@
+{% extends "modulos/plantillaModuleUser.html" %}
+
+{% load static %}
+
+{% block titulo %} Realizar Solicitudes {% endblock %}
+
+{% block content %}
+
+<div class="container-fluid" id="clientFormContainer">
+    {# CORRECCIÓN CLAVE: action del formulario apunta al nombre de URL correcto 'registroCliente' #}
+    <form action="" method="POST" id="clientForm" novalidate>
+        {% csrf_token %}
+        <h2 class="mb-4">Realizar Solicitud </h2>
+
+        <div class="row g-3" style="width: 100%;">
+            <div class="col-12">
+                <label for="solicitud" class="form-label">Tipo de Solicitud:</label>
+                <select name="solicitud" id="solicitud" class="form-select" required>
+                    <option value="" selected disabled>Seleccione un tipo de solicitud</option>
+                    <option value="cambioServicio" {% if request_post.solicitud == "cambioServicio" %}selected{% endif %}> Cambiar plan o servicio</option>
+                    <option value="Mudanza" {% if request_post.solicitud == "Mudanza" %}selected{% endif %}>Mudanza</option>
+                    <option value="retiroServicio" {% if request_post.solicitud == "retiroServicio" %}selected{% endif %}>Retiro de servicio</option>
+                </select>
+                <div class="invalid-feedback">
+                    Por favor, seleccione un tipo de solicitud.
+                </div>
+            </div>
+
+            {# Hidden Fields Section #}
+            <div id="hiddenRequestFields" class="row g-3" style="width: 100%;">
+                <div id="cambioServicioFields" class="col-12 d-none"> {# Added d-none class #}
+                    <label for="plan" class="form-label">Plan o Servicio:</label>
+                    <select name="plan" id="plan" class="form-select">
+                        <option value="" selected disabled>Seleccione un plan</option>
+                        <option value="aba ultra 60mb" {% if request_post.plan == "aba ultra 60mb" %}selected{% endif %}>Aba ultra 60mb</option>
+                        <option value="aba ultra 100mb" {% if request_post.plan == "aba ultra 100mb" %}selected{% endif %}>Aba ultra 100mb</option>
+                        <option value="aba ultra 200mb" {% if request_post.plan == "aba ultra 200mb" %}selected{% endif %}>Aba ultra 200mb</option>
+                        <option value="aba ultra 300mb" {% if request_post.plan == "aba ultra 300mb" %}selected{% endif %}>Aba ultra 300mb</option>
+                    </select>
+                    <div class="invalid-feedback">
+                        Por favor, seleccione un plan.
+                    </div>
+                </div>
+
+                <div id="MudanzaFields" class="col-12 d-none"> {# Added d-none class #}
+                    <label for="direccionNueva" class="form-label">Nueva Dirección:</label>
+                    <textarea class="form-control" name="nueva_dic" id="direccionNueva" rows="3"
+                        placeholder="Escriba la nueva dirección">{{ request_post.nueva_dic }}</textarea>
+                    <div class="invalid-feedback">
+                        La nueva dirección es obligatoria.
+                    </div>
+                </div>
+
+                <div id="retiroServicioFields" class="col-12 d-none"> {# Added d-none class #}
+                    <label for="motivoRetiro" class="form-label">Motivo de Retiro:</label>
+                    <textarea class="form-control" name="motivoRetiro" id="motivoRetiro" rows="3"
+                        placeholder="Escriba el motivo de retiro del servicio">{{ request_post.motivoRetiro }}</textarea>
+                    <div class="invalid-feedback">
+                        El motivo de retiro es obligatorio.
+                    </div>
+                </div>
+            </div>
+            {# End Hidden Fields Section #}
+
+            <div class="text-center-btn col-12">
+                {% if permisos.permiso4.tipo_permiso.id %}
+                <a name="" id="" class="btn btn-danger" href="#" role="button" disabled>Permiso denegado para mandar
+                Solicitudes</a>
+                {% else %}
+                <button type="submit" class="btn btn-primary" id="submitBtn" style="max-width: 550px;">Enviar solicitud</button>
+                {% endif %}
+            </div>
+        </div>
+    </form>
+</div>
+
+{# Link to jQuery and your custom JS file #}
+<script src="{% static 'js/jquery-3.7.0.min.js' %}"></script>
+<script src="{% static 'js/solicitudForm.js' %}"></script>
+
+{# Inline scripts for messages (can also be moved to JS if preferred) #}
+{% if mensaje %}
+<script>
+    mensajeError("{{ mensaje }}")
+</script>
+{% elif mensaje1 %}
+<script>
+    mensajeExito("{{ mensaje1 }}")
+</script>
+{% endif %}
+
+{% endblock %}

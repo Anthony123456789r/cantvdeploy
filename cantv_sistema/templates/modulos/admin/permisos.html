@@ -1,0 +1,182 @@
+{% extends "modulos/plantillaModule.html" %}
+{% block titulo %} Adminstrar permisos {% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center align-items-center g-2">
+        <div class="col-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Permisos</h4>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-striped
+                    table-hover	
+                    table-borderless
+                    table-primary
+                    align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>tipo de Permiso</th>
+                                <th>Descripcion</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-group-divider">
+                            {% for permiso in permisos %}
+                            <tr class="table-primary">
+                                <td scope="row">{{permiso.tipoPermiso}}</td>
+                                <td>
+                                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#descripcion{{ permiso.id }}"
+                                        aria-expanded="false" aria-controls="descripcion{{ permiso.id }}">
+                                        Ver
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="collapse" id="descripcion{{ permiso.id }}">
+                                    <!-- Aquí va la descripción que deseas mostrar -->
+                                    {{ permiso.descripcion }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="card w-auto">
+                <div class="card-body">
+                    <h4 class="card-title">Usuarios</h4>
+                    <div class="table-responsive">
+                        <table class="table table-primary">
+                            <thead>
+                                <tr>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Nombre</th>
+                                    <th scope="col">Rango</th>
+                                    <th scope="col">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for usuario in usuarios %}
+                                <tr>
+                                    <td>{{ usuario.id }}</td>
+                                    <td>{{ usuario.nombre }}</td>
+                                    <td>{{ usuario.tipo_rango.rango }}</td>
+                                    <td>
+                                        <form action="{% url 'permisosAdmin' %}" method="post">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="idUser" value="{{ usuario.id }}">
+                                            <input type="hidden" name="idRango" value="{{ usuario.tipo_rango.id }}">
+                                            <!-- Agregar un div que contendrá el enlace "Permisos" -->
+                                            <div>
+                                                <a href="#permisosCollapse{{ usuario.id }}" class="btn btn-primary" data-bs-toggle="collapse"
+                                                    role="button" aria-expanded="false"
+                                                    aria-controls="permisosCollapse{{ usuario.id }}">Permisos</a>|
+                                                <input name="#" id="#" class="btn btn-success" type="submit" value="Asignar">
+                                            </div>
+                                            <br>
+                                            <div class="collapse" id="permisosCollapse{{ usuario.id }}">
+                                                <!-- Verificar el tipo de usuario actual y mostrar los permisos disponibles correspondientes -->
+                                                {% if usuario.tipo_rango.id == 1 %}
+                                                {% for permiso in permisos_disponibles_admin %}
+                                                <!-- Renderizar los checkbox para seleccionar los permisos disponibles -->
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="permisos"
+                                                        value="{{ permiso.tipoPermiso }}" id="{{ permiso.tipoPermiso }}{{ usuario.id }}">
+                                                    <label class="form-check-label" for="{{ permiso.tipoPermiso }}{{ usuario.id }}">
+                                                        {{ permiso.tipoPermiso }}
+                                                    </label>
+                                                </div>
+                                                {% endfor %}
+                                                {% elif usuario.tipo_rango.id == 2 %}
+                                                {% for permiso in permisos_disponibles_subadmin %}
+                                                <!-- Renderizar los checkbox para seleccionar los permisos disponibles -->
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="permisos"
+                                                        value="{{ permiso.tipoPermiso }}" id="{{ permiso.tipoPermiso }}{{ usuario.id }}">
+                                                    <label class="form-check-label" for="{{ permiso.tipoPermiso }}{{ usuario.id }}">
+                                                        {{ permiso.tipoPermiso }}
+                                                    </label>
+                                                </div>
+                                                {% endfor %}
+                                                {% elif usuario.tipo_rango.id == 3 %}
+                                                {% for permiso in permisos_disponibles_tecnico %}
+                                                <!-- Renderizar los checkbox para seleccionar los permisos disponibles -->
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="permisos"
+                                                        value="{{ permiso.tipoPermiso }}" id="{{ permiso.tipoPermiso }}{{ usuario.id }}">
+                                                    <label class="form-check-label" for="{{ permiso.tipoPermiso }}{{ usuario.id }}">
+                                                        {{ permiso.tipoPermiso }}
+                                                    </label>
+                                                </div>
+                                                {% endfor %}
+                                                {% elif usuario.tipo_rango.id == 4 %}
+                                                {% for permiso in permisos_disponibles_cliente %}
+                                                <!-- Renderizar los checkbox para seleccionar los permisos disponibles -->
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="permisos"
+                                                        value="{{ permiso.tipoPermiso }}" id="{{ permiso.tipoPermiso }}{{ usuario.id }}">
+                                                    <label class="form-check-label" for="{{ permiso.tipoPermiso }}{{ usuario.id }}">
+                                                        {{ permiso.tipoPermiso }}
+                                                    </label>
+                                                </div>
+                                                {% endfor %}
+                                                {% endif %}
+                                            </div>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Permisos a Usuarios</h4>
+                        <table class="table table-primary">
+                            <thead>
+                                <tr>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Nombre</th>
+                                    <th scope="col">Rango</th>
+                                    <th scope="col">Permisos</th>
+                                </tr>
+                            </thead>
+                            <tbody>            
+                                {% for nombre_usuario, permisos in permisos_por_usuario.items %}
+                                <tr>
+                                    <td>{{ permisos.idUser.id }}</td>
+                                    <td>{{ nombre_usuario }}</td>
+                                    <td>{{ permisos.rango }}</td>
+                                    <td>
+                                        <form action="{% url 'eliminar_permi_user' %}" method="post">
+                                            {% csrf_token %}
+                                        <select class="form-select form-select-lg" name="permiso_asignado" id="">
+                                            <option selected>Permisos asignados</option>
+                                                {% for permiso in permisos.permisos %}
+                                            <option value="{{ permiso.tipo_permiso.id }}">{{ permiso.tipo_permiso }}</option>
+                                                {% endfor %}
+                                        </select>
+                                        <br>
+                                        <input type="hidden" name="id_capture" value="{{ permisos.idUser.id }}">
+                                        <button name="#" id="#" class="btn btn-danger" role="button" type="submit">Eliminar permiso</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

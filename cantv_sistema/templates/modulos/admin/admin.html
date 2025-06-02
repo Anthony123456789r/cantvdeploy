@@ -1,0 +1,335 @@
+{% extends "modulos/plantillaModule.html" %}
+
+{% block titulo %} Panel principal{% endblock %}
+
+{% block content %}
+
+<form class="d-flex" method="post" action="{% url 'admin' %}">
+    {% csrf_token %}
+    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="busqueda">
+    <button class="btn btn-outline-success" type="submit">Search</button>
+</form>
+
+<div class="mt-4">
+    {% if search_results %}
+    <div class="collapse show mt-3" id="collapseExample">
+        <div class="card card-body">
+            <ul>
+                <div class="card">
+                    <button type="button" class="btn-close float-end" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-label="Close"></button>
+                    <div class="card-body">
+                        <h4 class="card-title">Búsqueda obtenida</h4>
+                        <div class="table-responsive">
+                            <table class="table table-primary">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">ID</th>
+                                        <th scope="col">Nombre</th>
+                                        <th scope="col">Cédula</th>
+                                        <th scope="col">Rango</th>
+                                        <th scope="col">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for result in search_results %}
+                                    <tr>
+                                        {% if result.rango_id == 2 or result.rango_id == 3 %}
+                                        <td>{{ result.id }}</td>
+                                        <td>{{ result.nombre }}</td>
+                                        <td>{{ result.cedula }}</td>
+                                        <td>{{ result.rango }}</td>
+                                        <td></td>
+                                        {% elif result.rango_id == 4 %}
+                                        <td>{{ result.id }}</td>
+                                        <td>{{ result.nombre }}</td>
+                                        <td>{{ result.cedula }}</td>
+                                        <td>{{ result.rango }}</td>
+                                        <td>
+                                            <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#cliente-{{ result.id }}-info" aria-expanded="false" aria-controls="cliente-{{ result.id }}-info">
+                                                Más información
+                                            </button>
+                                            |
+                                            <a name="" id="" class="btn btn-danger" href="{% url 'eliminarCliente' result.id %}" role="button">Eliminar cliente</a>
+                                            |
+                                            <a href="{% url 'editarCliente' result.id %}" class="btn btn-warning">Editar</a>
+                                        </td>
+                                        {% endif %}
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            {% for result in search_results %}
+                                {% if result.rango_id == 4 %}
+                                <div id="cliente-{{ result.id }}-info" class="collapse">
+                                    <table class="table table-primary">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">FAT</th>
+                                                <th scope="col">Posición FAT</th>
+                                                <th scope="col">Potencia FAT</th>
+                                                <th scope="col">Potencia casa</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for cliente in clientes %}
+                                                {% if cliente.id == result.id %}
+                                                <tr>
+                                                    <td>{{ cliente.fat1.fat }}</td>
+                                                    <td>{{ cliente.posicion_fat }}</td>
+                                                    <td>{{ cliente.potencia_fat }}</td>
+                                                    <td>{{ cliente.potencia_casa }}</td>
+                                                </tr>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </ul>
+        </div>
+    </div>
+    {% else %}
+        <h4>{{ sinResult }}</h4>
+    {% endif %}
+</div>
+
+
+
+<a class="btn btn-primary mt-3" data-bs-toggle="collapse" href="#consultaCollapse" role="button">Estadísticas de Reportes</a>
+<div class="collapse mt-3" id="consultaCollapse">
+    <div class="card card-body">
+        <form method="post" action="">
+            {% csrf_token %}
+            <div class="row mb-3">
+                <div class="col-6">
+                    <div>
+                        <img src="" alt="">
+                    </div>
+                    <label for="inputSelect" class="form-label">Tipo de reporte</label>
+                    <select class="form-select" id="inputSelect" name="estad_report_select">
+                        <option selected>Opción</option>
+                        <option value="estad_fallas">Fallas</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-success">Consultar</button>
+        </form>
+    </div>
+</div>
+
+
+
+<div class="card mb-5 mt-5">
+    <div class="card-header">
+        Datos de usuarios
+    </div>
+    <div class="card-body">
+        <h4 class="card-title">Usuarios de CanTV</h4>
+        <div class="table-responsive">
+            <table class="table table-primary">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Apellido</th>
+                        <th scope="col">C.I</th>
+                        <th scope="col">Dirección</th>
+                        <th scope="col">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cliente in clientes %}
+                    <tr>
+                        <th>{{ cliente.id }}</th>
+                        <th>{{ cliente.nombre }}</th>
+                        <th>{{ cliente.apellido }}</th>
+                        <th>{{ cliente.cedula }}</th>
+                        <th>{{ cliente.direccion }}</th>
+                        <th>
+                            <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#cliente-{{ cliente.id }}-info" aria-expanded="false" aria-controls="cliente-{{ cliente.id }}-info">
+                                Más información
+                            </button>
+                            |
+                            <a name="" id="" class="btn btn-danger" href="{% url 'eliminarCliente' cliente.id %}" role="button">Eliminar cliente</a>
+                            |
+                            <a href="{% url 'editarCliente' cliente.id %}" class="btn btn-warning">Editar</a>
+                        </th>
+                    </tr>
+                    <tr id="cliente-{{ cliente.id }}-info" class="collapse">
+                        <td colspan="6">
+                            <table class="table table-danger">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">FAT</th>
+                                        <th scope="col">Posición FAT</th>
+                                        <th scope="col">Potencia FAT</th>
+                                        <th scope="col">Potencia casa</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>{{ cliente.fat1.fat }}</td>
+                                        <td>{{ cliente.posicion_fat }}</td>
+                                        <td>{{ cliente.potencia_fat }}</td>
+                                        <td>{{ cliente.potencia_casa }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card-footer text-muted">
+        <a name="" id="" class="btn btn-primary" href="{% url 'registroCliente' %}" role="button">Agregar cliente</a>
+    </div>
+</div>
+
+---
+
+<div class="card mb-5">
+    <div class="card-header">
+        Datos de empleados
+    </div>
+    <div class="card-body">
+        <h4 class="card-title">Empleados Técnicos de CanTV</h4>
+        <div class="table-responsive">
+            <table class="table table-primary">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Apellido</th>
+                        <th scope="col">C.I</th>
+                        <th scope="col">Teléfono</th>
+                        <th scope="col">Dirección</th>
+                        <th scope="col">Estado</th>
+                        <th scope="col">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tecnico in empleados %}
+                    <tr>
+                        <th>{{ tecnico.id }}</th>
+                        <th>{{ tecnico.nombre }}</th>
+                        <th>{{ tecnico.apellido }}</th>
+                        <th>{{ tecnico.cedula }}</th>
+                        <th>{{ tecnico.telefono }}</th>
+                        <th>{{ tecnico.direccion }}</th>
+                        <th>
+                            <div class="d-flex flex-column"> {# Use flex-column to stack buttons vertically #}
+                                {# The "Eliminar Tecnico" button uses btn-danger. Let's inspect its computed styles. #}
+                                {# Assuming btn-danger with default Bootstrap padding/font-size gives desired size. #}
+                                {# We'll create a custom class to match if necessary, but try applying btn-danger's implicit size first. #}
+                                <a href="{% url 'enviarReporte' tecnico.id %}" type="button" id="enlace-disponible-{{ tecnico.id }}"
+                                   class="btn btn-success mb-1 btn-fixed-size">{{ tecnico.estado.estado }}</a>
+                                <a href="{% url 'verReportes' tecnico.id %}" type="button" id="enlace-ocupado-{{ tecnico.id }}"
+                                   class="btn btn-dark mb-1 btn-fixed-size">{{ tecnico.estado.estado }}</a>
+                                <a href="#" type="button" id="enlace-sin-registrar-{{ tecnico.id }}"
+                                   class="btn btn-secondary btn-sm">{{ tecnico.estado.estado }}</a>
+                            </div>
+                        </th>
+                        <th>
+                            <a name="" id="" class="btn btn-danger" href="{% url 'eliminarTecnico' tecnico.id %}" role="button">Eliminar Técnico</a>
+                            |
+                            <a href="{% url 'editarTecnico' tecnico.id %}" class="btn btn-warning">Editar</a>
+                        </th>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card-footer text-muted">
+        <a name="" id="" class="btn btn-primary" href="{% url 'crearTecnico' %}" role="button">Agregar Técnico</a>
+    </div>
+</div>
+
+
+
+<div class="card mb-5">
+    <div class="card-header">
+        Datos de sub admin
+    </div>
+    <div class="card-body">
+        <h4 class="card-title">Sub admins del sistema</h4>
+        <div class="table-responsive">
+            <table class="table table-primary">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Apellido</th>
+                        <th scope="col">C.I</th>
+                        <th scope="col">Teléfono</th>
+                        <th scope="col">Dirección</th>
+                        <th scope="col">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for subAdmin in subAdmin %}
+                    <tr>
+                        <th>{{ subAdmin.id }}</th>
+                        <th>{{ subAdmin.nombre }}</th>
+                        <th>{{ subAdmin.apellido }}</th>
+                        <th>{{ subAdmin.cedula }}</th>
+                        <th>{{ subAdmin.telefono }}</th>
+                        <th>{{ subAdmin.direccion }}</th>
+                        <th>
+                            <a name="" id="" class="btn btn-danger" href="{% url 'eliminarSubAdmin' subAdmin.id %}" role="button">Eliminar subAdmin</a>
+                            |
+                            <a href="{% url 'editarSubAdmin' subAdmin.id %}" class="btn btn-warning">Editar</a>
+                        </th>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if mensaje %}
+        <script>
+            mensajeError("{{ mensaje }}")
+        </script>
+        {% elif mensaje1 %}
+        <script>
+            mensajeExito("{{ mensaje1 }}")
+        </script>
+        {% endif %}
+    </div>
+    <div class="card-footer text-muted">
+        <a name="" id="" class="btn btn-primary" href="{% url 'crearSubAdmin' %}" role="button">Agregar Sub Admin</a>
+    </div>
+</div>
+
+<script>
+    {% for tecnico in empleados %}
+    // Get the elements for the current tecnico
+    var estadoTecnico_{{ tecnico.id }} = "{{ tecnico.estado.estado }}";
+    var enlaceDisponible_{{ tecnico.id }} = document.getElementById("enlace-disponible-{{ tecnico.id }}");
+    var enlaceOcupado_{{ tecnico.id }} = document.getElementById("enlace-ocupado-{{ tecnico.id }}");
+    var enlaceSinRegistrar_{{ tecnico.id }} = document.getElementById("enlace-sin-registrar-{{ tecnico.id }}");
+
+    // Hide all buttons initially for this tecnico
+    enlaceDisponible_{{ tecnico.id }}.style.display = "none";
+    enlaceOcupado_{{ tecnico.id }}.style.display = "none";
+    enlaceSinRegistrar_{{ tecnico.id }}.style.display = "none";
+
+    // Show the appropriate button based on the technician's status
+    if (estadoTecnico_{{ tecnico.id }} === "disponible") {
+        enlaceDisponible_{{ tecnico.id }}.style.display = "block"; // Show the "disponible" button
+    } else if (estadoTecnico_{{ tecnico.id }} === "ocupado") {
+        enlaceOcupado_{{ tecnico.id }}.style.display = "block"; // Show the "ocupado" button
+    } else {
+        enlaceSinRegistrar_{{ tecnico.id }}.style.display = "block"; // Show the "sin registrar" button
+    }
+    {% endfor %}
+</script>
+
+
+
+{% endblock content %}

@@ -1,0 +1,43 @@
+{% extends "modulos/plantillaModuleSub.html" %}
+{% block titulo %} ver reportes {% endblock %}
+{% block content %}
+
+<div class="col-12">
+    <h1>tecnico: {{tecnico.nombre}} {{tecnico.apellido}}</h1>
+    <div class="table-responsive">
+        <table class="table table-primary">
+            <thead>
+                <tr>
+                    <th scope="col">Categoria</th>
+                    <th scope="col">Descripcion</th>
+                    <th scope="col">Nombre de cliente</th>
+                    <th scope="col">C.I</th>
+                    <th scope="col">Fecha del reporte</th>
+                    <th scope="col">estatus</th>
+                    <th scope="col">Accion</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reporte in nuevo_reporte %}
+                <tr>
+                <td>{{ reporte.DatosReporteCliente.categoria }}</td>
+                <td>{{ reporte.DatosReporteCliente.falla }}</td>
+                <td>{{ reporte.DatosReporteCliente.DatosCliente.nombre }}</td>
+                <td>{{ reporte.DatosReporteCliente.DatosCliente.cedula }}</td>
+                <td>{{ reporte.DatosReporteCliente.formatted_fecha }}</td>
+                <td>{{ reporte.status.estadoReporter }}</td>
+                    <td>
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="reporte_id" value="{{reporte.id}}">
+                            <button type="submit" class="btn btn-primary">Reasignar reporte</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

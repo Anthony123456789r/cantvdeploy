@@ -1,0 +1,55 @@
+{% extends "modulos/plantillaModuleSub.html" %}
+{% block titulo %} Creacion de empleados {% endblock %}
+{% block content %}
+<form action="" method="post">
+    {% csrf_token %}
+    <div class="row justify-content-center align-items-center g-2">
+        <div class="col-3">
+            <label for="" class="form-label">Nombre:</label>
+            <input type="text" name="empleado" id="" class="form-control" placeholder="" aria-describedby="helpId">
+        </div>
+        <div class="col-3">
+            <label for="" class="form-label">Apellido:</label>
+            <input type="text" name="apellidoEmpleado" id="" class="form-control" placeholder=""
+                aria-describedby="helpId">
+        </div>
+        <div class="col-3">
+            <label for="" class="form-label">C.I:</label>
+            <input type="text" name="cedulaEmpleado" id="" class="form-control" placeholder=""
+                aria-describedby="helpId">
+        </div>
+        <div class="col-12">
+            <label for="" class="form-label">Direccion:</label>
+            <input type="text" name="direccion" id="" class="form-control" placeholder="" aria-describedby="helpId">
+        </div>
+        <div class="col-12">
+            <label for="" class="form-label">Telefono:</label>
+            <input type="number" name="telefono" id="" class="form-control" placeholder="" aria-describedby="helpId">
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Agregar</button>
+        </div>
+    </div>
+</form>
+{% if mensaje %}
+<script>
+    mensajeError("{{mensaje}}")
+</script>
+{% elif mensaje1 %}
+<script>
+    mensajeExito("{{mensaje1}}")
+</script>
+{% endif %}
+
+
+<!--<div class="mb-3">
+  
+  
+  
+  
+  
+  
+  
+  
+</div>-->
+{% endblock %}

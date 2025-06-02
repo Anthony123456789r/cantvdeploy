@@ -1,0 +1,58 @@
+1
+
+CREATE OR REPLACE FUNCTION cantv_sistema_cliente_audit()
+RETURNS TRIGGER AS $$
+DECLARE
+    accion TEXT;
+BEGIN
+    IF TG_OP = 'INSERT' THEN
+        accion := 'INSERCIÓN';
+        INSERT INTO auditoria (tabla_afectada, id_afectado, accion, valor_anterior, valor_actual)
+        VALUES ('cantv_sistema_cliente', NEW.id, accion, NULL, row_to_json(NEW));
+    ELSIF TG_OP = 'UPDATE' THEN
+        accion := 'ACTUALIZACIÓN';
+        INSERT INTO auditoria (tabla_afectada, id_afectado, accion, valor_anterior, valor_actual)
+        VALUES ('cantv_sistema_cliente', NEW.id, accion, row_to_json(OLD), row_to_json(NEW));
+    ELSIF TG_OP = 'DELETE' THEN
+        accion := 'ELIMINACIÓN';
+        INSERT INTO auditoria (tabla_afectada, id_afectado, accion, valor_anterior, valor_actual)
+        VALUES ('cantv_sistema_cliente', OLD.id, accion, row_to_json(OLD), NULL);
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER cantv_sistema_cliente_trigger
+AFTER INSERT OR UPDATE OR DELETE ON cantv_sistema_cliente
+FOR EACH ROW EXECUTE FUNCTION cantv_sistema_cliente_audit();
+
+
+2
+
+CREATE OR REPLACE FUNCTION cantv_sistema_tecnico_audit()
+RETURNS TRIGGER AS $$
+DECLARE
+    accion TEXT;
+BEGIN
+    IF TG_OP = 'INSERT' THEN
+        accion := 'INSERCIÓN';
+        INSERT INTO auditoria (tabla_afectada, id_afectado, accion, valor_anterior, valor_actual)
+        VALUES ('cantv_sistema_tecnico', NEW.id, accion, NULL, row_to_json(NEW));
+    ELSIF TG_OP = 'UPDATE' THEN
+        accion := 'ACTUALIZACIÓN';
+        INSERT INTO auditoria (tabla_afectada, id_afectado, accion, valor_anterior, valor_actual)
+        VALUES ('cantv_sistema_tecnico', NEW.id, accion, row_to_json(OLD), row_to_json(NEW));
+    ELSIF TG_OP = 'DELETE' THEN
+        accion := 'ELIMINACIÓN';
+        INSERT INTO auditoria (tabla_afectada, id_afectado, accion, valor_anterior, valor_actual)
+        VALUES ('cantv_sistema_tecnico', OLD.id, accion, row_to_json(OLD), NULL);
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER cantv_sistema_tecnico_trigger
+AFTER INSERT OR UPDATE OR DELETE ON cantv_sistema_tecnico
+FOR EACH ROW EXECUTE FUNCTION cantv_sistema_tecnico_audit();

@@ -1,0 +1,47 @@
+{% extends "modulos/plantillaModuleSub.html" %}
+{% block titulo %} enviar reporte{% endblock %}
+{% block content %}
+
+<h1>Reportes para el tecnico</h1>
+<div class="row justify-content-center align-items-center g-2">
+    <div class="col-12">
+        <div class="table-responsive">
+            <table class="table table-primary">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Categoria</th>
+                        <th scope="col">Descripcion</th>
+                        <th scope="col">C.I</th>
+                        <th scope="col">Fecha</th>
+                        <th scope="col">status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for historial in reporte %}
+                    <tr>
+                        <th>{{historial.id}}</th>
+                        <th>{{historial.DatosReporteCliente.categoria}}</th>
+                        <th>{{historial.DatosReporteCliente.falla}}</th>
+                        <th>{{historial.DatosCliente.cedula_cliente}}</th>
+                        <th>{{historial.DatosReporteCliente.formatted_fecha}}</th>
+                        <th>{{historial.status.estadoReporter}}</th>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% if mensaje %}
+<script>
+    mensajeError("{{mensaje}}")
+</script>
+{% elif mensaje1 %}
+<script>
+    mensajeExito("{{mensaje1}}")
+</script>
+{% endif %}
+
+
+{% endblock %}

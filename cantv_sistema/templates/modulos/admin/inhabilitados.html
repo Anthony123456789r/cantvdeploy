@@ -1,0 +1,141 @@
+{% extends "modulos/plantillaModule.html" %}
+{% block titulo %} Usuarios inhabilitados {% endblock %}
+{% block content %}
+
+<div class="card">
+    <div class="card-header">
+        Tecnicos
+    </div>
+    <div class="card-body">
+        <h4 class="card-title">Hinabilitados</h4>
+        <div class="table-responsive">
+            <table class="table table-primary">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Cedula</th>
+                        <th scope="col">Estado</th>
+                        <th scope="col">Accion</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tecnico in tecnicos %}
+                    <tr>
+                        <td>{{tecnico.id}}</td>
+                        <td>{{tecnico.nombre}}</td>
+                        <td>{{tecnico.cedula}}</td>
+                        <td>{% if tecnico.eliminado %}inhabilitado{% endif %}</td>
+                        <td>
+                            <form action="{% url 'hinabilitados'%}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="id_tecnico" value="{{tecnico.id}}">
+                                <input type="submit" value="Rehabilitar" class="btn  btn-outline-success">
+                            </form>
+                        </td>
+                        <td>
+                            <form action="{% url 'historial_tecnico' %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="id_tecnico_historial" value="{{tecnico.id}}">
+                                <input type="submit" value="Historial" class="btn btn-outline-primary">
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+    <div class="card-footer text-muted">
+        Tecnicos
+    </div>
+</div>
+<br>
+<div class="card">
+    <div class="card-header">
+        SubAdmins
+    </div>
+    <div class="card-body">
+        <h4 class="card-title">Hinabilitados</h4>
+        <div class="table-responsive">
+            <table class="table table-primary">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Cedula</th>
+                        <th scope="col">Estado</th>
+                        <th scope="col">Accion</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sudAdmins in sudAdmins %}
+                    <tr>
+                        <td>{{sudAdmins.id}}</td>
+                        <td>{{sudAdmins.nombre}}</td>
+                        <td>{{sudAdmins.cedula}}</td>
+                        <td>{% if sudAdmins.eliminado %}inhabilitado{% endif %}</td>
+                        <td>
+                            <form action="{% url 'hinabilitados'%}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="id_subAdmin" value="{{sudAdmins.id}}">
+                                <input type="submit" value="Rehabilitar" class="btn  btn-outline-success">
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    
+    </div>
+    <div class="card-footer text-muted">
+        SubAdmins
+    </div>
+</div>
+<br>
+<div class="card">
+    <div class="card-header">
+        Clientes
+    </div>
+    <div class="card-body">
+        <h4 class="card-title">Hinabilitados</h4>
+        <div class="table-responsive">
+            <table class="table table-primary">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Cedula</th>
+                        <th scope="col">Estado</th>
+                        <th scope="col">Accion</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for clientes in clientes %}
+                    <tr>
+                        <td>{{clientes.id}}</td>
+                        <td>{{clientes.nombre}}</td>
+                        <td>{{clientes.cedula}}</td>
+                        <td>{% if clientes.eliminado %}inhabilitado{% endif %}</td>
+                        <td>
+                            <form action="{% url 'hinabilitados'%}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="id_cliente" value="{{clientes.id}}">
+                                <input type="submit" value="Rehabilitar" class="btn  btn-outline-success">
+                            </form>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+    <div class="card-footer text-muted">
+        SubAdmins
+    </div>
+</div>
+
+{% endblock %}

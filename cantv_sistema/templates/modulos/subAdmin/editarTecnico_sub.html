@@ -1,0 +1,70 @@
+{% extends "modulos/plantillaModuleSub.html" %}
+{% block titulo %} Editar tecnico {% endblock %}
+{% block content %}
+<head>
+    <title>Editar técnico</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col">
+                <h2>Información del técnico</h2>
+                {% for tecnicos in empleados %}
+                <ul class="list-unstyled">
+                    <li><strong>Nombre:</strong> {{tecnicos.nombre}}</li>
+                    <li><strong>Apellido:</strong> {{tecnicos.apellido}}</li>
+                    <li><strong>Cédula:</strong> {{tecnicos.cedula}}</li>
+                    <li><strong>Direccion:</strong> {{tecnicos.direccion}}</li>
+                    <li><strong>Telefono:</strong> {{tecnicos.telefono}}</li>
+                    <li><strong>Estado:</strong> {{tecnicos.estado.estado}}</li>
+                </ul>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <h2>Editar información del técnico</h2>
+                <form action="{% url 'editarTecnico_sub' tecnico.id %}" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="nombre">Nombre:</label>
+                        <input type="text" class="form-control" name="nombre" value="{{ request.POST.nombre }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="apellido">Apellido:</label>
+                        <input type="text" class="form-control" name="apellido" value="{{ request.POST.apellido }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="correo">Direccion:</label>
+                        <input type="text" class="form-control" name="direccion" value="{{ request.POST.direccion }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="correo">Telefono:</label>
+                        <input type="number" class="form-control" name="telefono" value="{{ request.POST.telefono }}">
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-primary me-md-2">Guardar cambios</button>
+                        <a href="{% url 'subAdmin' %}"><button type="button" class="btn btn-secondary">Cancelar</button></a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+{% if mensaje %}
+<script>
+    mensajeError("{{mensaje}}")
+</script>
+{% elif mensaje1 %}
+<script>
+    mensajeExito("{{mensaje1}}")
+</script>
+{% endif %}
+
+
+{% endblock %}

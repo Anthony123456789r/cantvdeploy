@@ -1,0 +1,160 @@
+.bot {
+    width: 200px;
+    height: 400px;
+    position: relative;
+}
+
+.head {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background-color: #F0D9C8;
+    /* Color de piel */
+    margin: 0 auto;
+    position: relative;
+    top: 20px;
+}
+
+.hair {
+    width: 120px;
+    height: 40px;
+    background-color: #463F3A;
+    /* Color de pelo */
+    border-bottom-left-radius: 60px 30px;
+    border-bottom-right-radius: 60px 30px;
+}
+
+.face {
+    width: 100px;
+    height: 80px;
+    background-color: #F0D9C8;
+    /* Color de piel */
+    position: absolute;
+    top: 30px;
+    left: 10px;
+}
+
+.eyes {
+    width: 40px;
+    height: 20px;
+    background-color: #000;
+    /* Color de ojos */
+    position: absolute;
+    top: 20px;
+    left: 30px;
+}
+
+.nose {
+    width: 20px;
+    height: 20px;
+    background-color: #F0D9C8;
+    /* Color de piel */
+    position: absolute;
+    top: 40px;
+    left: 40px;
+}
+
+.mouth {
+    width: 60px;
+    height: 20px;
+    background-color: #000;
+    /* Color de boca */
+    position: absolute;
+    top: 60px;
+    left: 30px;
+    animation: talking 2s infinite linear;
+}
+
+.body {
+    width: 120px;
+    height: 180px;
+    background-color: #F0D9C8;
+    /* Color de piel */
+    margin: 0 auto;
+    position: relative;
+    top: 20px;
+}
+
+.arms {
+    width: 120px;
+    height: 120px;
+    position: relative;
+    top: 40px;
+}
+
+.arm {
+    width: 20px;
+    height: 120px;
+    background-color: #F0D9C8;
+    /* Color de piel */
+    position: absolute;
+}
+
+.arm:first-child {
+    left: -20px;
+}
+
+.arm:last-child {
+    right: -20px;
+}
+
+.legs {
+    width: 120px;
+    height: 160px;
+    position: relative;
+    top: 40px;
+    margin: 0 auto;
+}
+
+.leg {
+    width: 40px;
+    height: 80px;
+    background-color: #F0D9C8;
+    /* Color de piel */
+    position: absolute;
+}
+
+.leg:first-child {
+    left: 30px;
+}
+
+.leg:last-child {
+    right: 30px;
+}
+
+.shoes {
+    width: 120px;
+    height: 40px;
+    position: relative;
+    top: 80px;
+}
+
+.shoe {
+    width: 60px;
+    height: 40px;
+    background-color: #000;
+    /* Color de zapatos */
+    position: absolute;
+}
+
+.shoe:first-child {
+    left: 0;
+}
+
+.shoe:last-child {
+    right: 0;
+}
+
+@keyframes talking {
+    0% {
+        transform: scaleY(1);
+    }
+
+    50% {
+        transform: scaleY(0.8);
+    }
+
+    100% {
+        transform: scaleY(1);
+    }
+}

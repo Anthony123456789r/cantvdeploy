@@ -1,0 +1,42 @@
+    /* Custom CSS for a better aspect */
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #007bff, #0056b3) !important; /* Blue gradient */
+    }
+    .fs-7 { /* Custom font size for badges */
+        font-size: 0.75rem; /* ~12px */
+    }
+    .table-sm th, .table-sm td {
+        padding: 0.5rem; /* Default table-sm is 0.3rem, this is a slight increase for readability */
+    }
+    .h6 {
+        font-size: 1rem; /* Adjust h6 if default is too big */
+    }
+
+    /* --- Modified Styles --- */
+
+    /* Make subtitle text more visible */
+    .card-header .small {
+        color: white !important; /* Force white text */
+        opacity: 1 !important; /* Ensure full opacity */
+    }
+
+    /* Make caption text more visible and left-aligned */
+    .table caption .small {
+        color: #6c757d !important; /* Bootstrap's default muted gray, but ensures full opacity */
+        opacity: 1 !important; /* Ensure full opacity */
+        font-weight: 500; /* Make it a bit bolder */
+        text-align: start !important; /* Force left alignment */
+    }
+
+    /* Export Excel Button Hover Effect */
+    .btn-export-excel {
+        background-color: #28a745; /* Bootstrap success green */
+        border-color: #28a745;
+        transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out; /* Smooth transition */
+    }
+
+    .btn-export-excel:hover {
+        background-color: #1e7e34; /* Darker green on hover */
+        border-color: #1e7e34;
+        color: #fff; /* Ensure text remains white */
+    }

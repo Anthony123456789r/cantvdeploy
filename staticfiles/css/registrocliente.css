@@ -1,0 +1,183 @@
+
+        /* Specific ID for the main container */
+        #clientFormContainer {
+            padding: 20px;
+            border-radius: 10px;
+        }
+        #clientForm .form-label {
+            font-weight: 500;
+            color: #343a40;
+            margin-bottom: 0.1rem;
+            text-align: left;
+            width: 100%;
+        }
+
+        #clientForm .form-control {
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            padding: 0.75rem;
+            transition: border-color 0.2s ease;
+            margin: 0.2rem 0 0.5rem 0;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        #clientForm .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+            outline: none;
+        }
+        #clientForm #submitBtn {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            border-radius: 6px;
+            transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-top: 0.5rem;
+            margin-bottom: 0;
+            display: block;
+            width: 100%; /* Take full width of parent */
+            box-sizing: border-box; /* Include padding and border in the element's total width */
+        }
+        #clientForm #submitBtn:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+            transform: translateY(-1px);
+        }
+        #clientForm #submitBtn:active {
+            background-color: #004080;
+            border-color: #004080;
+            transform: translateY(0);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        #clientForm .form-text {
+            display: none;
+        }
+        #clientForm h2 {
+            color: #2c3e50;
+            font-weight: 700;
+            margin-top: 0;
+            margin-bottom: 1rem;
+            text-align: left;
+            font-size: 2rem;
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 350px; /* This is the width we'll match for the hr */
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding-left: 0;
+            box-sizing: border-box;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        #clientForm {
+            background-color: #ffffff;
+            padding: 1.5rem 1rem 2rem 1rem; /* Adjust horizontal padding if needed */
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            max-width: 550px;
+            margin: 0 auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        #clientForm .form-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding-bottom: 0.5rem;
+            width: 100%;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            box-sizing: border-box;
+        }
+        /* Remove padding-bottom from the last form group */
+        #clientForm .form-group:last-of-type {
+            padding-bottom: 0;
+        }
+        #clientForm .text-center-btn {
+            width: 100%;
+            text-align: center;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            box-sizing: border-box;
+            margin-top: 1rem;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Custom styles for select elements */
+        #clientForm .form-select {
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            padding: 0.75rem 1.25rem 0.75rem 0.75rem; /* Adjust padding for dropdown arrow */
+            transition: border-color 0.2s ease;
+            margin: 0.2rem 0 0.5rem 0;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e"); /* Custom SVG arrow */
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 16px 12px;
+            -webkit-appearance: none; /* Remove default arrow on WebKit browsers */
+            -moz-appearance: none;    /* Remove default arrow on Firefox */
+            appearance: none;         /* Remove default arrow */
+        }
+
+        #clientForm .form-select:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+            outline: none;
+        }
+
+        /* Specific styles for the "Fat" select element */
+        #fatSelect {
+            min-height: 100px; /* Adjust height for multiple selection if needed */
+        }
+
+        /* Improved custom style for the hr line: Black and matches h2 width */
+        #clientForm .divider-line {
+            border: 0;
+            height: 2px; /* Thickness of the line */
+            background-color: #343a40; /* Dark gray, almost black */
+            margin: 2.5rem auto; /* Vertical spacing and auto margins to center it */
+            width: 350px; /* Explicitly matches the max-width of the h2 elements */
+            max-width: 100%; /* Ensures it's still responsive on smaller screens */
+            border-radius: 1px; /* Slightly rounded edges for a smoother look */
+            opacity: 0.8; /* A slight transparency for a softer visual */
+        }
+
+        /* Style for valid/invalid feedback */
+        #clientForm .is-invalid + .invalid-feedback {
+            display: block;
+        }
+        #clientForm .invalid-feedback {
+            color: #dc3545;
+            font-size: 0.875em;
+            margin-top: 0.25rem;
+            text-align: left;
+        }
+        #clientForm .is-valid + .valid-feedback {
+            display: block;
+        }
+        #clientForm .valid-feedback {
+            color: #28a745;
+            font-size: 0.875em;
+            margin-top: 0.25rem;
+            text-align: left;
+        }
+
+        /* Style for cuadrilla textarea-like effect */
+        #cuadrilla {
+            min-height: calc(1.5em + 0.75rem + 2px); /* Minimum height for a single line */
+            resize: vertical; /* Allow vertical resizing */
+            overflow: auto; /* Add scroll if content exceeds height */
+        }

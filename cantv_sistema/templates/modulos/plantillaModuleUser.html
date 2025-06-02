@@ -1,0 +1,79 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>{% block titulo %} {% endblock %}</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="{% static 'js/package/dist/sweetalert2.min.css' %}">
+    <script src="{% static 'js/package/dist/sweetalert2.all.min.js' %}"></script>
+    <script src="{% static 'js/alertas.js' %}"></script>
+
+    <!-- Bootstrap CSS v5.2.1 -->
+    <link rel="stylesheet" href="{% static 'bootstrap-5.0.2-dist/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static '../static/css/estilos1cantv.css' %}">
+    <link rel="stylesheet" href="{% static 'css/registrocliente.css' %}">
+    <link rel="stylesheet" href="{% static 'css/formulariosolicitudcliente.css' %}">
+    <link rel="stylesheet" href="{% static 'css/estilosreportecliente.css' %}">
+</head>
+<div class="container">
+    <header>
+        <nav>
+            <label for="" class="brand">
+                <a href="{% url 'cliente' %}"><img src="{% static '../static/css/img/Cantv_logo.png' %}"></a>
+            </label>
+        <a href="{% url 'cliente' %}">Inicio</a>
+        <a href="{% url 'generarReporte' %}">Generar reporte</a>
+        <a href="{% url 'historialReporteCliente' %}">Historial de reportes</a>
+        <a href="{% url 'solicitudes' %}">Solicitudes</a>
+        <a href="{% url 'cerrar_user' %}">Cerrar sesion</a>
+        </nav>
+        <br>
+        <br>
+        <section class="textos-header">
+            <h1>{% block subtitulo %} {% endblock %}</h1>
+        </section>
+    </header>
+    <main>
+        {% block content %}
+
+        {% endblock %}
+    </main>
+    <div class="container my-5">
+        <!-- Footer -->
+        <footer>
+            <div class="contenedor-footer">
+                <div class="content-foo">
+                    <h4>Teléfono</h4>
+                    <p>+ 58 425 874 21</p>
+                </div>
+                <div class="content-foo">
+                    <h4>Instagram</h4>
+                    <p>@cantv.ve</p>
+                </div>
+                <div class="content-foo">
+                    <h4>Twitter</h4>
+                    <p>@AbaCantv</p>
+                </div>
+    
+            </div>
+            <h6 class="titulo-final">CANTV Táchira</h6>
+            <p>CANTV (Compañía Anónima Nacional Teléfonos de Venezuela) es una empresa de
+                telecomunicaciones estatal de Venezuela.
+                Fundada en 1930, CANTV es la compañía telefónica más grande y antigua de Venezuela y
+                provee servicios de telefonía fija,
+                móvil, Internet y televisión por suscripción a hogares, empresas y organismos
+                gubernamentales en todo el país.</p>
+            <h6 class="titulo-final">© 2023 Copyright Venezuela,Táchira-San Cristobal Cantv.com </h6>
+        </footer>
+        <!-- Footer -->
+    </div>
+    <!-- End of .container -->
+    <!-- Bootstrap JavaScript Libraries -->
+    <script src="{% static 'bootstrap-5.0.2-dist/js/bootstrap.js' %}"></script>
+    </body>
+</div>
+
+</html>

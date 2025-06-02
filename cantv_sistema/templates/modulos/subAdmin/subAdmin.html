@@ -1,0 +1,304 @@
+{% extends "modulos/plantillaModuleSub.html" %}
+{% block titulo %} Panel principal {% endblock %}
+{% block content %}
+<form class="d-flex" method="post" action="{% url 'subAdmin' %}">
+    {% csrf_token %}
+    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="busqueda">
+    <button class="btn btn-outline-success" type="submit">Search</button>
+</form>
+<div class="mt-4">
+    {% if search_results %}
+    <div class="collapse show mt-3" id="collapseExample">
+        <div class="card card-body">
+            <ul>
+                <div class="card">
+                    <button type="button" class="btn-close float-end" data-bs-toggle="collapse"
+                        data-bs-target="#collapseExample" aria-label="Close"></button>
+                    <div class="card-body">
+                        <h4 class="card-title">Busqueda obtenida</h4>
+                        <div class="table-responsive">
+                            <table class="table table-primary">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">ID</th>
+                                        <th scope="col">Nombre</th>
+                                        <th scope="col">Cedula</th>
+                                        <th scope="col">Rango</th>
+                                        <th scope="col">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        {% for result in search_results %}
+                                        {% if result.rango_id == 2 %}
+                                        <td>{{result.id}}</td>
+                                        <td>{{result.nombre}}</td>
+                                        <td>{{result.cedula}}</td>
+                                        <td>{{result.rango}}</td>
+                                        {% elif result.rango_id == 3 %}
+                                        <td>{{result.id}}</td>
+                                        <td>{{result.nombre}}</td>
+                                        <td>{{result.cedula}}</td>
+                                        <td>{{result.rango}}</td>
+                                        {% elif result.rango_id == 4 %}
+                                        <td>{{result.id}}</td>
+                                        <td>{{result.nombre}}</td>
+                                        <td>{{result.cedula}}</td>
+                                        <td>{{result.rango}}</td>
+                                        <td>
+                                            {% if permisos.permiso1.tipo_permiso.id %}
+                                            <button class="btn btn-primary ocultar-boton" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#contenido-{{cliente.id}}-info" aria-expanded="false"
+                                                aria-controls="contenido-{{result.id}}-info" id="permiso11" disabled>
+                                                Más información
+                                            </button>
+                                            {% else %}
+                                            <button class="btn btn-primary ocultar-boton" type="button" data-bs-toggle="collapse"
+                                                data-bs-target="#cliente-{{cliente.id}}-info" aria-expanded="false" aria-controls="cliente-{{result.id}}-info"
+                                                id="permiso11">
+                                                Más información
+                                            </button>
+                                            {% endif %}
+                                            |
+                                            {% if permisos.permiso2.tipo_permiso.id %}
+                                            <a name="" id="permiso2" class="btn btn-danger disabled"
+                                                href="{% url 'algoRaroPasa' result.id %}" role="button"  id="btn_agregar" disabled>Eliminar
+                                                cliente</a>
+                                            {% else %}
+                                            <a name="" id="permiso2" class="btn btn-danger" href="{% url 'eliminar_cli' result.id %}" role="button"
+                                                id="btn_agregar">Eliminar
+                                                cliente</a>
+                                            {% endif %}
+                                        </td>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div id="contenido-{{cliente.id}}-info" class="collapse">
+                                <h2>NO tienes Permisos para ver la informacion :(</h2>
+                            </div>
+                            <div id="cliente-{{result.id}}-info" class="collapse">
+                                <table class="table table-primary">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">FAT</th>
+                                            <th scope="col">Posicion FAT</th>
+                                            <th scope="col">Potencia FAT</th>
+                                            <th scope="col">Potencia casa</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for cliente in clientes %}
+                                        {% for result in search_results %}
+                                        {% if cliente.id == result.id %}
+                                        <tr>
+                                            <td scope="row">{{cliente.fat1.fat}}</td>
+                                            <td>{{cliente.posicion_fat}}</td>
+                                            <td>{{cliente.potencia_fat}}</td>
+                                            <td>{{cliente.potencia_casa}}</td>
+                                        </tr>
+                                        {% endif %}
+                                        {% endfor %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ul>
+        </div>
+    </div>
+    {% else %}
+    <h4>{{sinResult}}</h4>
+    {% endif %}
+</div>
+<!--=======TABLA CON DATOS DE LOS CLIENTES======-->
+<div class="card mb-5 mt-5">
+    <div class="card-header">
+        Datos de usuarios
+    </div>
+    <div class="card-body">
+        <h4 class="card-title">Usuarios de CanTV</h4>
+        <div class="table-responsive">
+            <table class="table table-primary">
+                <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Apellido</th>
+                        <th scope="col">C.I</th>
+                        <th scope="col">Direccion</th>
+                        <th scope="col">acciones</th>
+    
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cliente in clientes %}
+                    <tr>
+                        <th>{{cliente.id}}</th>
+                        <th>{{cliente.nombre}}</th>
+                        <th>{{cliente.apellido}}</th>
+                        <th>{{cliente.cedula}}</th>
+                        <th>{{cliente.direccion}}</th>
+                        <th>
+                            {% if permisos.permiso1.tipo_permiso.id %}
+                            <button class="btn btn-primary ocultar-boton" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#contenido-{{cliente.id}}-info" aria-expanded="false" aria-controls="contenido-{{result.id}}-info"
+                                id="permiso11" disabled>
+                                Más información
+                            </button>
+                            {% else %}
+                            <button class="btn btn-primary ocultar-boton" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#cliente-{{cliente.id}}-info" aria-expanded="false" aria-controls="cliente-{{result.id}}-info"
+                                id="permiso11">
+                                Más información
+                            </button>
+                            {% endif %}
+                            |
+                            {% if permisos.permiso3.tipo_permiso.id %}
+                            <a name="" id="permiso2" class="btn btn-danger disabled" href="{% url 'algoRaroPasa' cliente.id %}" role="button"  id="btn_agregar">Eliminar
+                                cliente</a>
+                            {% else %}
+                            <a name="" id="permiso2" class="btn btn-danger" href="{% url 'eliminar_cli' cliente.id %}" role="button"
+                                id="btn_agregar">Eliminar
+                                cliente</a>
+                            {% endif %}
+                        </th>
+                    <tr id="contenido-{{cliente.id}}-info" class="collapse">
+                        <td colspan="6"><h2>NO tienes Permisos para ver la informacion :(</h2></td>
+                    </tr>
+                    <tr id="cliente-{{cliente.id}}-info" class="collapse">
+                        <td colspan="6">
+                            <table class="table table-danger">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">FAT</th>
+                                        <th scope="col">Posicion FAT</th>
+                                        <th scope="col">Potencia FAT</th>
+                                        <th scope="col">Potencia casa</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>{{cliente.fat1.fat}}</td>
+                                        <td>{{cliente.posicion_fat}}</td>
+                                        <td>{{cliente.potencia_fat}}</td>
+                                        <td>{{cliente.potencia_casa}}</td>
+                                    </tr>
+                                    <!-- Agrega más filas según los títulos e información adicional que necesites mostrar -->
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card-footer text-muted">
+    
+    </div>
+    </div>
+    <!--=======TABLA CON DATOS DE LOS EMPLEADOS======-->
+    <div class="card mb-5">
+        <div class="card-header">
+            Datos de empleados
+        </div>
+        <div class="card-body">
+            <h4 class="card-title">Empleados Tecnicos de CanTV</h4>
+            <div class="table-responsive">
+                <table class="table table-primary">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Apellido</th>
+                            <th scope="col">C.I</th>
+                            <th scope="col">Direccion</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tecnico in empleados %}
+                        <tr>
+                            <th>{{tecnico.id}}</th>
+                            <th>{{tecnico.nombre}}</th>
+                            <th>{{tecnico.apellido}}</th>
+                            <th>{{tecnico.cedula}}</th>
+                            <th>{{tecnico.direccion}}</th>
+                            <th>
+                                <div class="d-grid gap-2">
+                                    <a href="{% url 'enviarReporte_sub' tecnico.id %}" type="button" name="" id="enlace-disponible-{{tecnico.id}}"
+                                        class="btn btn-success">{{tecnico.estado.estado}}</a>
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <a href="{% url 'verReportes_sub' tecnico.id %}" type="button" name="" id="enlace-ocupado-{{tecnico.id}}"
+                                        class="btn btn-dark">{{tecnico.estado.estado}}</a>
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <a href="#" type="button" name="" id="enlace-sin-registrar-{{tecnico.id}}"
+                                        class="btn btn-secondary">{{tecnico.estado.estado}}</a>
+                                </div>
+                            </th>
+                            <th>
+                                {% if permisos.permiso3.tipo_permiso.id %}
+                                <a href="{% url 'algoRaroPasa' tecnico.id %}" class="btn btn-danger disabled"  id="permiso2">Eliminar</a>
+                                {% else %}
+                                <a href="{% url 'eliminarTecnico_sub' tecnico.id %}" class="btn btn-danger" id="permiso2">Eliminar</a>
+                                {% endif %}
+                                |
+                                {% if permisos.permiso3.tipo_permiso.id %}
+                                <a href="{% url 'algoRaroPasa' tecnico.id %}" class="btn btn-warning disabled"  id="permiso3">Editar</a>
+                                {% else %}
+                                <a href="{% url 'editarTecnico_sub' tecnico.id %}" class="btn btn-warning" id="permiso3">Editar</a>
+                                {% endif %}
+                            </th>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer text-muted">
+            <a name="" id="permiso4" class="btn btn-primary" href="{% url 'crearTecnicoSubAdmin' %}" role="button"  id="btn_agregar">Agregar</a>
+        </div>
+    </div>
+</div>
+{% for tecnico in empleados %}
+<script>
+    var estadoTecnico = "{{tecnico.estado.estado}}";
+    var enlaceDisponible = document.getElementById("enlace-disponible-{{tecnico.id}}");
+    var enlaceOcupado = document.getElementById("enlace-ocupado-{{tecnico.id}}");
+    var enlaceSinRegistrar = document.getElementById("enlace-sin-registrar-{{tecnico.id}}");
+
+    if (estadoTecnico == "disponible") {
+        enlaceOcupado.style.display = "none";
+        enlaceSinRegistrar.style.display = "none";
+        enlaceDisponible.style.display = "block"; // mostrar el botón disponible
+    } else if (estadoTecnico == "ocupado") {
+        enlaceDisponible.style.display = "none";
+        enlaceSinRegistrar.style.display = "none";
+        enlaceOcupado.style.display = "block"; // mostrar el botón ocupado
+    } else {
+        enlaceDisponible.style.display = "none";
+        enlaceOcupado.style.display = "none";
+        enlaceSinRegistrar.style.display = "block"; // mostrar el botón sin registrar
+    }
+</script>
+{% endfor %}
+{% if algo_mal %}
+<script>
+    function mensajeSospecha(){
+            Swal.fire({
+            icon: 'question',
+            text: 'No tienes permisos para esta accion. cuidado o_O',
+        })
+        }
+        mensajeSospecha()
+</script>
+{% endif %}
+</div>
+{% endblock %}

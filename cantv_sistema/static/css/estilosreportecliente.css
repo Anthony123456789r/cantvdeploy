@@ -1,0 +1,83 @@
+ /* Default font size for all text within the content block */
+    #content * {
+        font-size: 1.15em; /* Slightly larger default font size */
+        color: black;
+    }
+
+    /* Ensure form labels are also black and a bit larger */
+    .form-label,
+    .form-check-label {
+        color: black !important;
+        font-size: 1.15em !important; /* Matches the default for consistency */
+    }
+
+    /* Style for select dropdowns - maintain consistent size */
+    .form-select {
+        font-size: 1.15em; /* Always this size, no change on selection */
+        color: black; /* Ensure text in select is black */
+    }
+
+    /* Style for options within the select - ensure they are also black */
+    .form-select option {
+        color: black;
+    }
+
+    /* Style for alerts */
+    .alert strong {
+        color: black; /* Make sure alert strong text is black */
+    }
+
+    /* --- Custom Error Message Style (for radio buttons) --- */
+    #customLucesErrorMessage {
+        display: none; /* Hidden by default */
+        position: fixed; /* Fixed position relative to viewport */
+        top: 50%; /* Center vertically */
+        left: 50%; /* Center horizontally */
+        transform: translate(-50%, -50%); /* Adjust for true centering */
+        background-color: #dc3545; /* Bootstrap danger red */
+        color: white; /* White text */
+        padding: 25px 40px; /* More padding for a larger feel */
+        border-radius: 8px; /* Slightly rounded corners */
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Soft shadow */
+        font-size: 1.8em; /* Much larger font size */
+        font-weight: bold; /* Bold text */
+        text-align: center; /* Center the text */
+        z-index: 1050; /* Above most other content (like Bootstrap modals) */
+        animation: fadeInScale 0.3s ease-out; /* Smooth animation */
+    }
+
+    @keyframes fadeInScale {
+        from {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+    }
+
+    #customLucesErrorMessage .close-btn {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        color: white;
+        font-size: 1.5em;
+        cursor: pointer;
+        background: none;
+        border: none;
+        line-height: 1;
+    }
+
+    /* --- ENHANCED INVALID FEEDBACK STYLES --- */
+    .invalid-feedback {
+        font-size: 1em; /* Make it same as base content font-size, slightly larger than Bootstrap default */
+        color: #C20000 !important; /* A more aggressive red color */
+        font-weight: bold; /* Make the text bold */
+        margin-top: 0.25rem; /* Standard Bootstrap spacing */
+    }
+
+    /* This also applies to form-check-input to highlight the radio/checkbox itself */
+    .form-check-input.is-invalid {
+        border-color: #C20000 !important;
+    }

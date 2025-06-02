@@ -1,0 +1,24 @@
+{% extends "modulos/plantillaModuleTecnico.html" %}
+{% block titulo %} formulario de gestion{% endblock %}
+{% block content %}
+
+
+<div class="card">
+  <div class="card-header">
+    <h1>Formulario para gestionar el reporte N° {{id_reporte}}</h1>
+  </div>
+  <div class="card-body">
+    <h4 class="card-title">Informacion adicional y detallada</h4>
+    <form action="{% url 'informeGestion' %}" method="post">
+      {% csrf_token %}
+      <p class="card-text">
+      <div class="mb-3">
+        <textarea class="form-control" name="informacion_adicional" id="" rows="10" placeholder="Descripcion..."></textarea>
+        <input type="hidden" name="reporte_id" value="{{id_reporte}}">
+        <input id="" class="btn btn-primary" type="submit" value="Enviar">
+      </div>
+      </p>
+    </form>
+  </div>
+</div>
+{% endblock %}

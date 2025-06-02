@@ -1,0 +1,229 @@
+{% extends "modulos/plantillaModule.html" %}
+{% load static %}
+{% block titulo %} Registrar FAT {% endblock %}
+{% block content %}
+
+<div class="container" id="clientFormContainer">
+    <form action="{% url 'regisFAT' %}" method="POST" id="clientForm" novalidate>
+        {% csrf_token %}
+        <h2 class="mb-4">Registro de FAT</h2>
+
+        <div class="row g-3" style="width: 100%;">
+            <div class="col-12">
+                <label for="odnSelect" class="form-label">ODN:</label>
+                <select name="odnElegir" id="odnSelect" class="form-select" required>
+                    <option value="" selected disabled>Seleccione una ODN disponible</option>
+                    {% for odn_obj in llamado %}
+                        <option value="{{ odn_obj.odn }}" {% if request_post.odnElegir == odn_obj.odn %}selected{% endif %}>
+                            {{ odn_obj.odn }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <div class="invalid-feedback">
+                    Por favor, seleccione una ODN.
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3" style="width: 100%;">
+            <div class="col-12">
+                <label for="oltSelect" class="form-label">OLT:</label>
+                <select name="oltOpcion" id="oltSelect" class="form-select" required>
+                    <option value="" selected disabled>Seleccione una OLT</option>
+                    {# Options will be loaded via AJAX #}
+                </select>
+                <div class="invalid-feedback">
+                    Por favor, seleccione una OLT.
+                </div>
+            </div>
+        </div>
+        <div class="row g-3" style="width: 100%;">
+            <div class="col-12">
+                <label for="fatSelect" class="form-label">FAT:</label>
+                <select name="fatOpcion" id="fatSelect" class="form-select" required>
+                    <option value="" selected disabled>Seleccione un FAT</option>
+                    {# Options will be loaded via AJAX #}
+                </select>
+                <div class="invalid-feedback">
+                    Por favor, seleccione un FAT.
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3" style="width: 100%;">
+            <div class="col-12">
+                <label for="direccionFat" class="form-label">Dirección FAT:</label>
+                <input type="text" name="direccionFat" id="direccionFat" class="form-control" placeholder="Escriba la Dirección de la FAT" required value="{{ request_post.direccionFat }}">
+                <div class="invalid-feedback">
+                    La dirección de la FAT es obligatoria.
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3" style="width: 100%;">
+            <div class="col-12">
+                <label for="observacionFat" class="form-label">Observaciones FAT:</label>
+                <textarea name="observacionFat" id="observacionFat" class="form-control" placeholder="Escriba Las Observaciones de la FAT" rows="1" required>{{ request_post.observacionFat }}</textarea>
+                <div class="invalid-feedback">
+                    Las observaciones del FAT son obligatorias.
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center-btn col-12 mt-4">
+            <button type="submit" class="btn btn-primary" id="submitBtn" style="max-width: 550px;">Registrar FAT</button>
+        </div>
+    </form>
+</div>
+
+<script src="{% static 'js/jquery-3.7.0.min.js' %}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('clientForm');
+        const odnSelect = document.getElementById('odnSelect');
+        const oltSelect = document.getElementById('oltSelect');
+        const fatSelect = document.getElementById('fatSelect');
+        const direccionFatInput = document.getElementById('direccionFat');
+        const observacionFatTextarea = document.getElementById('observacionFat');
+
+        // Function to adjust textarea height
+        function adjustTextareaHeight(element) {
+            element.style.height = 'auto';
+            element.style.height = (element.scrollHeight) + 'px';
+        }
+
+        // Adjust height for observacionFat
+        observacionFatTextarea.addEventListener('input', function() {
+            adjustTextareaHeight(this);
+        });
+        adjustTextareaHeight(observacionFatTextarea); // Adjust on load
+
+        // Form submission and Bootstrap validation
+        form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+
+        // Add Bootstrap validation styles on input change and blur
+        Array.from(form.elements).forEach(input => {
+            if (input.tagName === 'SELECT' || input.tagName === 'INPUT' || input.tagName === 'TEXTAREA') {
+                input.addEventListener('input', validateInput);
+                input.addEventListener('blur', validateInput);
+                // Also validate on initial load if there's a pre-filled value from request_post
+                if (input.value && input.value !== '') {
+                    validateInput.call(input);
+                }
+            }
+        });
+
+        // Reusable validation function
+        function validateInput() {
+            const input = this;
+
+            // Custom validity for number inputs (if applicable)
+            if (input.type === 'number') {
+                if (isNaN(input.value) && input.value !== '') {
+                    input.setCustomValidity('Por favor, introduzca un número válido.');
+                } else {
+                    input.setCustomValidity('');
+                }
+            }
+
+            // Custom validation for observacionFat
+            if (input.id === 'observacionFat') {
+                if (input.required && input.value.trim() === '') {
+                    input.setCustomValidity('Las observaciones del FAT son obligatorias.');
+                } else {
+                    input.setCustomValidity('');
+                }
+            }
+
+            // Set validation classes
+            if (input.checkValidity()) {
+                input.classList.remove('is-invalid');
+                input.classList.add('is-valid');
+            } else {
+                input.classList.remove('is-valid');
+                input.classList.add('is-invalid');
+            }
+        }
+
+        // --- AJAX call for dynamic OLT and FAT selection based on ODN ---
+        $(odnSelect).on("change", function () {
+            var selectedOdn = $(this).val();
+
+            // Clear existing options in OLT and FAT selects, keeping the disabled default
+            $(oltSelect).find('option:gt(0)').remove();
+            $(fatSelect).find('option:gt(0)').remove();
+
+            if (selectedOdn) {
+                $.ajax({
+                    url: "{% url 'obtener_datos_fat' %}",
+                    type: 'POST',
+                    data: {
+                        'odnSeleccionado': selectedOdn,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response.oltOptions) {
+                            $(oltSelect).append(response.oltOptions);
+                            const storedOlt = "{{ request_post.oltOpcion }}";
+                            if (storedOlt) {
+                                $(oltSelect).val(storedOlt);
+                            }
+                            oltSelect.dispatchEvent(new Event('change'));
+                        } else {
+                            console.warn("No 'oltOptions' found in the AJAX response.");
+                        }
+
+                        if (response.fatOptions) {
+                            $(fatSelect).append(response.fatOptions);
+                            const storedFat = "{{ request_post.fatOpcion }}";
+                            if (storedFat) {
+                                $(fatSelect).val(storedFat);
+                            }
+                            fatSelect.dispatchEvent(new Event('change'));
+                        } else {
+                            console.warn("No 'fatOptions' found in the AJAX response.");
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error al obtener los datos (OLT y FAT):", error);
+                        oltSelect.dispatchEvent(new Event('change'));
+                        fatSelect.dispatchEvent(new Event('change'));
+                    }
+                });
+            } else {
+                oltSelect.dispatchEvent(new Event('change'));
+                fatSelect.dispatchEvent(new Event('change'));
+            }
+        });
+
+        // Trigger change on ODN select if a value is pre-selected (e.g., after a POST request)
+        const initialOdn = "{{ request_post.odnElegir }}";
+        if (initialOdn) {
+            $(odnSelect).val(initialOdn);
+            $(odnSelect).trigger('change');
+        } else {
+            validateInput.call(odnSelect);
+            validateInput.call(oltSelect);
+            validateInput.call(fatSelect);
+        }
+    });
+</script>
+
+{% if mensaje %}
+<script>
+    mensajeError("{{ mensaje }}")
+</script>
+{% elif mensaje1 %}
+<script>
+    mensajeExito("{{ mensaje1 }}")
+</script>
+{% endif %}
+
+{% endblock %}

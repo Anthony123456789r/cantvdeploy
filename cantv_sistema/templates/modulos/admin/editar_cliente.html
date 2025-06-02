@@ -1,0 +1,159 @@
+{% extends "modulos/plantillaModule.html" %}
+{% load static %}
+{% block titulo %} Panel principal{% endblock %}
+{% block content %}
+
+<head>
+    <title>Editar Cliente</title>
+</head>
+
+<body>
+    <div class="client-edit-section">
+        <div class="card client-info-card">
+            <div class="card-header">
+                Información del Cliente
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled client-info-list">
+                    {% for clientes in cliente_existentes %}
+                    <li><strong>ODN:</strong><span>{{clientes.ond_fat.odn}}</span></li>
+                    <li><strong>Usuario:</strong><span>{{clientes.nombre}}</span></li>
+                    <li><strong>Apellido:</strong><span>{{clientes.apellido}}</span></li>
+                    <li><strong>C.I:</strong><span>{{clientes.cedula}}</span></li>
+                    <li><strong>Contacto:</strong><span>{{clientes.contacto}}</span></li>
+                    <li><strong>Dirección:</strong><span>{{clientes.direccion}} </span></li>
+                    <li><strong>Cuadrilla:</strong><span>{{clientes.cuadrilla}}</span></li>
+                    <li><strong>FAT:</strong><span>{{clientes.fat1.fat}}</span></li>
+                    <li><strong>Posición FAT:</strong><span>{{clientes.posicion_fat}}</span></li>
+                    <li><strong>Potencia FAT:</strong><span>{{clientes.potencia_fat}}</span></li>
+                    <li><strong>Potencia Casa:</strong><span>{{clientes.potencia_casa}}</span></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="clientFormContainer">
+        <form action="{% url 'editarCliente' cliente.id %}" method="POST" id="clientForm" novalidate>
+            {% csrf_token %}
+            <h2 class="client-edit-title" id="clientEditHeaderTitle">Editar Información Del Cliente</h2>
+
+            <div class="row g-3" style="width: 100%;">
+                <div class="col-12">
+                    <label for="odnSelect" class="form-label">ODN:</label>
+                    <select name="odn" id="odnSelect" class="form-select" required>
+                        <option value="" selected disabled>Seleccione una ODN</option>
+                        {% for odns in llamar_odn %}
+                            <option value="{{ odns.odn }}" {% if request_post.odn == odns.odn|stringformat:"s" or cliente.ond_fat.odn == odns.odn %}selected{% endif %}> {{ odns.odn }}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="invalid-feedback">
+                        Por favor, seleccione una ODN.
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <label for="nombre" class="form-label">Usuario:</label>
+                    <input type="text" name="nombre" id="usuario" class="form-control" placeholder="Escriba el Nombre del cliente" required pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" value="{{ request_post.nombre|default:cliente.nombre }}">
+                    <div class="invalid-feedback">
+                        El nombre solo puede contener letras y espacios.
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label for="apellido" class="form-label">Apellido:</label>
+                    <input type="text" name="apellido" id="apellido" class="form-control" placeholder="Escriba el Apellido del cliente" required pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" value="{{ request_post.apellido|default:cliente.apellido }}">
+                    <div class="invalid-feedback">
+                        El apellido solo puede contener letras y espacios.
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label for="cedula" class="form-label">C.I:</label>
+                    <input type="text" name="cedula" id="ci" class="form-control" placeholder="Escriba la C.I. del cliente" required pattern="[0-9]+" value="{{ request_post.cedula|default:cliente.cedula }}">
+                    <div class="invalid-feedback">
+                        La C.I. solo puede contener números.
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label for="contacto" class="form-label">Contacto:</label>
+                    <input type="tel" name="contacto" id="contacto" class="form-control" placeholder="Escriba el Teléfono del cliente" required pattern="[0-9]{1,}" value="{{ request_post.contacto|default:cliente.contacto }}">
+                    <div class="invalid-feedback">
+                        El contacto solo puede contener números positivos.
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <label for="direccion" class="form-label">Direccion:</label>
+                    <input type="text" name="direccion" id="direccion" class="form-control" placeholder="Escriba la Dirección del cliente" required value="{{ request_post.direccion|default:cliente.direccion }}">
+                    <div class="invalid-feedback">
+                        La dirección es obligatoria.
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <label for="cuadrilla" class="form-label">Cuadrilla:</label>
+                    <textarea name="cuadrilla" id="cuadrilla" class="form-control" placeholder="Escriba el nombre de la cuadrilla" rows="1" required pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+">{{ request_post.cuadrilla|default:cliente.cuadrilla }}</textarea>
+                    <div class="invalid-feedback">
+                        La cuadrilla solo puede contener letras y espacios.
+                    </div>
+                </div>
+
+                <hr class="divider-line">
+
+                <h2 class="mt-4">Datos Técnicos</h2>
+                <div class="col-12">
+                    <label for="fatSelect" class="form-label">Fat:</label>
+                    <select class="form-select" name="fat" id="fatSelect" aria-label="multiple select example" required>
+                        <option value="" selected disabled>Seleccione una opción de Fat</option>
+                        {# Este bucle ya no es estrictamente necesario si AJAX funciona, pero es un buen fallback #}
+                        {# O puedes eliminarlo si solo quieres que los FATs se carguen vía AJAX #}
+                        {# Sin embargo, si quieres que el FAT seleccionado persista en caso de error del formulario, este bucle puede ser útil #}
+                        {% for registroFat in llamarFAT %}
+                            <option value="{{ registroFat.id }}" {% if request_post.fat|stringformat:"s" == registroFat.id|stringformat:"s" %}selected{% endif %}> {{ registroFat.fat }}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="invalid-feedback">
+                        Por favor, seleccione al menos una opción de Fat.
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label for="posicion_fat" class="form-label">Posición Fat:</label>
+                    <input type="text" name="posicion_fat" id="posicion_fat" class="form-control" placeholder="Escriba la Posición de Fat" required pattern="[a-zA-Z0-9\s]+" value="{{ request_post.posicion_fat|default:cliente.posicion_fat }}">
+                    <div class="invalid-feedback">
+                        La posición de Fat solo puede contener letras, números y espacios.
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label for="potencia_fat" class="form-label">Potencia Fat:</label>
+                    <input type="number" name="potencia_fat" id="potencia_fat" class="form-control" placeholder="Escriba la Potencia de Fat" required min="0" value="{{ request_post.potencia_fat|default:cliente.potencia_fat }}">
+                    <div class="invalid-feedback">
+                        La potencia de Fat debe ser un número positivo.
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label for="potencia_casa" class="form-label">Potencia Casa:</label>
+                    <input type="number" name="potencia_casa" id="potencia_casa" class="form-control" placeholder="Escriba la Potencia en Casa" required min="0" value="{{ request_post.potencia_casa|default:cliente.potencia_casa }}">
+                    <div class="invalid-feedback">
+                        La potencia en Casa debe ser un número positivo.
+                    </div>
+                </div>
+                <div class="col-12 d-grid gap-2 d-md-block text-center" style="max-width: 550px; margin: 0 auto;">
+                    <button type="submit" class="btn btn-primary mb-2" id="submitBtn">Guardar cambios</button>
+                    <a href="{% url 'admin' %}" class="btn btn-danger client-cancel-btn">Cancelar</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+{% if mensaje %}
+<script>
+    mensajeError("{{mensaje}}")
+</script>
+{% elif mensaje1 %}
+<script>
+    mensajeExito("{{mensaje1}}")
+</script>
+{% endif %}
+
+</script>
+
+{% endblock %}

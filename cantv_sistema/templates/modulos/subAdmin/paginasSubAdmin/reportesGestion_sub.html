@@ -1,0 +1,93 @@
+{% extends "modulos/plantillaModule.html" %}
+{% block titulo %} Reportes Gestionados {% endblock %}
+{% block content %}
+
+<div class="container py-4">
+
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-header bg-gradient-primary text-white text-center py-2 rounded-top-3">
+            <h3 class="h6 mb-1 fw-bold">Reportes Gestionados de Fallas</h3>
+            {# Subtitle with stronger visibility for the user #}
+            <p class="small text-white mb-0 opacity-100">Visualiza el estado y detalles de todos los reportes de servicio completados</p>
+        </div>
+        <div class="card-body p-3">
+            <div class="table-responsive">
+                {# Table caption moved to the left #}
+                <table class="table table-sm table-bordered table-hover table-striped align-middle caption-top mb-0">
+                    <caption><p class="small text-muted mb-0 opacity-100 text-start">Listado completo de reportes de servicio gestionados por el equipo técnico</p></caption>
+                    <thead class="bg-dark text-white text-uppercase fw-semibold">
+                        <tr>
+                            <th scope="col">Cliente</th>
+                            <th scope="col">Falla</th>
+                            <th scope="col">C.I.</th>
+                            <th scope="col">Fecha Creación</th>
+                            <th scope="col">Técnico</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col">Notas del Técnico</th>
+                            <th scope="col">Fecha Gestión</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for gestion in reportesGestionados %}
+                        <tr>
+                            <td>
+                                <span class="fw-medium">{{ gestion.Datos_Cliente.nombre }}</span>
+                                {% if gestion.DatosCliente_nombre is not none %}
+                                    <small class="d-block text-muted">{{ gestion.DatosCliente_nombre }}</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ gestion.DatosReporteCliente.categoria }}
+                                {% if gestion.DatosCliente_falla is not none %}
+                                    <small class="d-block text-muted">{{ gestion.DatosCliente_falla }}</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ gestion.Datos_Cliente.cedula }}
+                                {% if gestion.DatosCliente_cedula is not none %}
+                                    <small class="d-block text-muted">{{ gestion.DatosCliente_cedula }}</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ gestion.DatosReporteCliente.formatted_fecha }}
+                                {% if gestion.formatted_fecha_gestionn is not none %}
+                                    <small class="d-block text-muted">{{ gestion.formatted_fecha_gestionn }}</small>
+                                {% endif %}
+                            </td>
+                            <td><span class="text-nowrap">{{ gestion.DatosTecnico.nombre }}</span></td>
+                            <td>
+                                <span class="badge rounded-pill px-2 py-1 fs-7
+                                    {% if gestion.status.estadoReporter == 'Resuelto' %} bg-success-subtle text-success border border-success
+                                    {% elif gestion.status.estadoReporter == 'En Proceso' %} bg-warning-subtle text-warning border border-warning
+                                    {% elif gestion.status.estadoReporter == 'Pendiente' %} bg-info-subtle text-info border border-info
+                                    {% elif gestion.status.estadoReporter == 'Cerrado' %} bg-secondary-subtle text-secondary border border-secondary
+                                    {% else %} bg-light text-dark border
+                                    {% endif %}">
+                                    {{ gestion.status.estadoReporter }}
+                                </span>
+                            </td>
+                            <td>
+                                <textarea class="form-control form-control-sm border-0 bg-transparent text-muted" rows="1" disabled>{{ gestion.mas_informacion_tecnico }}</textarea>
+                            </td>
+                            <td><span class="text-nowrap">{{ gestion.formatted_fecha_gestion }}</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {# Export button is now below the card, aligned to the left #}
+    <div class="d-flex justify-content-start mt-3"> {# Aligned to the start (left) with top margin #}
+        <form method="GET" action="{% url 'reportesGestionados' %}">
+            {% csrf_token %}
+            <button type="submit" name="export_excel" class="btn btn-export-excel btn-sm d-flex align-items-center">
+                <i class="bi bi-file-earmark-excel fs-6 me-2"></i> Exportar a Excel
+            </button>
+        </form>
+    </div>
+</div>
+
+
+{% endblock %}

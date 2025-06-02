@@ -1,0 +1,35 @@
+{% extends "modulos/plantillaModule.html" %}
+{% block titulo %} reportes para tecnicos {% endblock %}
+{% block content %}
+
+    <div class="col-12">
+        <h1>tecnico: {{tecnico.nombre}} {{tecnico.apellido}}</h1>
+        <div class="table-responsive">
+            <table class="table table-primary">
+                <thead>
+                    <tr>
+                        <th scope="col">Categoria</th>
+                        <th scope="col">Nombre de cliente</th>
+                        <th scope="col">C.I</th>
+                        <th scope="col">Fecha del reporte</th>
+                        <th scope="col">estatus</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reporte in nuevo_reportee %}
+                    <tr>
+                        <td>{{ reporte.DatosReporteCliente.categoria }}</td>
+                        <td>{{ reporte.DatosCliente.nombre }}</td>
+                        <td>{{ reporte.DatosCliente.cedula }}</td>
+                        <td>{{ reporte.DatosReporteCliente.formatted_fecha }}</td>
+                        <td>{{ reporte.status.estadoReporter }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

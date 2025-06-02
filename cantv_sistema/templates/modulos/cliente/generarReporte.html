@@ -1,0 +1,373 @@
+{% extends "modulos/plantillaModuleUser.html" %}
+{% block titulo %} Panel principal{% endblock %} {# Corrected: endoblast to endblock #}
+{% block content %}
+
+<div id="customLucesErrorMessage">
+    <button type="button" class="close-btn" aria-label="Cerrar">&times;</button>
+    Por favor, seleccione el estado de las luces.
+</div>
+
+<form action="" method="post" type="multipart/form-data" enctype="multipart/form-data" id="reportForm" class="needs-validation" novalidate>
+    {% csrf_token %}
+    <div class="mb-3">
+        <div class="mb-3">
+            <label for="categoria" class="form-label">Categoria de falla:</label>
+            <select class="form-select form-select-lg" name="categoria" id="categoria" required>
+                <option value="" selected>Seleccione falla</option>
+                {% for dato in datos %}
+                <option value="{{ dato.falla }}">{{ dato.falla }}</option>
+                {% endfor %}
+                <option value="lento">Internet lento</option>
+            </select>
+            <div class="invalid-feedback">
+                Por favor, seleccione una categoría de falla.
+            </div>
+        </div>
+        <div class="mb-3" style="display: none;" id="conexion">
+            <label for="falla_conexion" class="form-label">Informacion mas detallada:</label>
+            <select class="form-select form-select-lg" name="falla1" id="falla_conexion" required>
+                <option value="" selected>Indique la falla por desconexion de internet</option>
+                {% for dato in datos1 %}
+                <option value="{{ dato.informacion1 }}">{{ dato.informacion1 }}</option>
+                {% endfor %}
+            </select>
+            <div class="invalid-feedback">
+                Por favor, indique la falla por desconexión.
+            </div>
+        </div>
+        <div class="mb-3" style="display: none;" id="hida">
+            <label for="falla_hida" class="form-label">Informacion mas detallada</label>
+            <select class="form-select form-select-lg" name="falla2" id="falla_hida" required>
+                <option value="" selected>Indique la falla por hida y venida de internet</option>
+                {% for dato in datos1 %}
+                <option value="{{ dato.informacion2 }}">{{ dato.informacion2 }}</option>
+                {% endfor %}
+            </select>
+            <div class="invalid-feedback">
+                Por favor, indique la falla de intermitencia.
+            </div>
+        </div>
+        <div class="mb-3" style="display: none;" id="internet_lento">
+            <div class="mb-3" id="subir_imagen_opcion">
+                <label for="prueba_velocidad" class="form-label">Subir captura de velocidad:</label>
+                <input type="file" class="form-control" name="prueba_velocidad" id="prueba_velocidad" aria-describedby="fileHelpId">
+                <div class="invalid-feedback">
+                    Por favor, suba una captura de su velocidad a internet.
+                </div>
+            </div>
+            <div class="alert alert-primary" role="alert">
+                <strong>Si no sabe cual es tu velocidad actual entra aqui y realiza un testeo:</strong> <a href="https://velocidadaba.cantv.net/" target="_blank" rel="noopener noreferrer">Realizar Testeo</a>
+            </div>
+            <div class="alert alert-dark" role="alert">
+                <strong>Para que la imagen sea correcta, debe tomar un capture de pantalla y subir dicho acpture al formulario</strong>
+            </div>
+        </div>
+        <div class="row justify-content-center align-items-center g-2">
+            <div class="col-4">
+                <label for="" class="form-label">Luces ONT/Luces del modem</label>
+                <div class="mb-3">
+                    <img src="cantv_sistema\static\css\img\pon1.jpg" alt="Imagen 1" width="200" height="280">
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="luces_pon" value="verde fijo" id="luces_pon_fijo">
+                    <label class="form-check-label" for="luces_pon_fijo">
+                        Encendido Verde fijo
+                    </label>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="mb-3">
+                    <img src="cantv_sistema\static\css\img\pon2.jpg" alt="Imagen 2" width="200" height="280">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="luces_pon" value="verde intermitente" id="luces_pon_intermitente1">
+                        <label class="form-check-label" for="luces_pon_intermitente1">
+                            Encendida Intermitente
+                        </label>
+                    </div>
+                </div>
+            </div>
+        <div class="col-4">
+            <div class="mb-3">
+                <img src="cantv_sistema\static\css\img\pon3.jpg" alt="Imagen 2" width="200" height="280">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="luces_pon" value="loss rojo" id="luces_pon_intermitente">
+                    <label class="form-check-label" for="luces_pon_intermitente">
+                        Encendida Intermitente rojo
+                    </label>
+                </div>
+            </div>
+        </div>
+        </div>
+        <br>
+        <div class="mb-3">
+              <label for="descripcion" class="form-label">Ingrese una breve descripcion de su problema o falla:</label>
+              <textarea class="form-control" name="descripcion" id="descripcion" rows="3" required></textarea>
+            <div class="invalid-feedback">
+                Por favor, ingrese una descripción de su problema.
+            </div>
+        </div>
+        {% if permisos.permiso4.tipo_permiso.id %}
+        <a name="" id="" class="btn btn-primary" href="#" role="button">Permiso denegado para mandar reportes</a>
+        {% else %}
+        <input type="submit" class="btn btn-primary mt-3" value="Enviar reporte"></input>
+        {% endif %}
+    </div>
+</form>
+{% if mensaje %}
+<script>
+    mensajeError("{{mensaje}}")
+</script>
+{% elif mensaje1 %}
+<script>
+    mensajeExito("{{mensaje1}}")
+</script>
+{% endif %}
+<script>
+    // Obtener elementos del DOM
+    const reportForm = document.getElementById('reportForm');
+    const categoriaSelect = document.getElementById("categoria");
+    const fallaConexionSelect = document.getElementById("falla_conexion");
+    const fallaHidaSelect = document.getElementById("falla_hida");
+    const lucesPonInputs = document.querySelectorAll('input[name="luces_pon"]'); // Get all radio buttons with this name
+    const customLucesErrorMessage = document.getElementById('customLucesErrorMessage'); // Our new custom error div
+    const customLucesErrorCloseBtn = customLucesErrorMessage.querySelector('.close-btn'); // Close button for custom error
+    const descripcionTextArea = document.getElementById("descripcion");
+    const internetLentoDiv = document.getElementById("internet_lento"); // The container div for "Internet lento" fields
+    const pruebaVelocidadInput = document.getElementById("prueba_velocidad"); // Input for file upload
+    const subirImagenOpcionDiv = document.getElementById("subir_imagen_opcion"); // The div containing the file input and its label
+
+    const conexionDiv = document.getElementById("conexion");
+    const hidaDiv = document.getElementById("hida");
+
+    // Function to handle validation display (show/hide invalid feedback for regular fields)
+    function showValidationFeedback(element, isValid) {
+        if (isValid) {
+            element.classList.remove('is-invalid');
+            const feedbackDiv = element.nextElementSibling;
+            if (feedbackDiv && feedbackDiv.classList.contains('invalid-feedback')) {
+                feedbackDiv.style.display = 'none';
+            }
+        } else {
+            element.classList.add('is-invalid');
+            const feedbackDiv = element.nextElementSibling;
+            if (feedbackDiv && feedbackDiv.classList.contains('invalid-feedback')) {
+                feedbackDiv.style.display = 'block';
+            }
+        }
+    }
+
+    // New function to show/hide the custom radio button error message
+    function showCustomRadioErrorMessage(show) {
+        if (show) {
+            customLucesErrorMessage.style.display = 'block';
+        } else {
+            customLucesErrorMessage.style.display = 'none';
+        }
+    }
+
+    // Add event listener for the close button on the custom error message
+    customLucesErrorCloseBtn.addEventListener('click', () => {
+        showCustomRadioErrorMessage(false);
+    });
+
+    // Function to show or hide the corresponding div and manage required attributes
+    function mostrarOcultarDiv() {
+        // Reset required attribute and validation state for all conditional selects and inputs
+        fallaConexionSelect.removeAttribute('required');
+        showValidationFeedback(fallaConexionSelect, true); // Reset validation state
+        fallaConexionSelect.selectedIndex = 0;
+
+        fallaHidaSelect.removeAttribute('required');
+        showValidationFeedback(fallaHidaSelect, true); // Reset validation state
+        fallaHidaSelect.selectedIndex = 0;
+
+        pruebaVelocidadInput.removeAttribute('required'); // Remove required for file input initially
+        showValidationFeedback(pruebaVelocidadInput, true); // Reset validation state for file input
+        subirImagenOpcionDiv.style.display = 'none'; // Hide the "subir imagen" option by default
+
+        // Hide custom error message when category changes
+        showCustomRadioErrorMessage(false);
+
+        // Handle display and required attributes based on category
+        if (categoriaSelect.value === "Sin conexión a internet") {
+            conexionDiv.style.display = "block";
+            fallaConexionSelect.setAttribute('required', 'required');
+            hidaDiv.style.display = "none";
+            internetLentoDiv.style.display = "none";
+            // For these categories, lights are explicitly required
+            lucesPonInputs.forEach(input => input.setAttribute('required', 'required'));
+        } else if (categoriaSelect.value === "Servicio Intermitente") {
+            conexionDiv.style.display = "none";
+            hidaDiv.style.display = "block";
+            fallaHidaSelect.setAttribute('required', 'required');
+            internetLentoDiv.style.display = "none";
+            // For these categories, lights are explicitly required
+            lucesPonInputs.forEach(input => input.setAttribute('required', 'required'));
+        } else if (categoriaSelect.value === "lento") {
+            conexionDiv.style.display = "none";
+            hidaDiv.style.display = "none";
+            internetLentoDiv.style.display = "block";
+            subirImagenOpcionDiv.style.display = 'block'; // Show the "subir imagen" option
+            pruebaVelocidadInput.setAttribute('required', 'required'); // File input required for 'lento'
+            // For 'lento', lights are also required
+            lucesPonInputs.forEach(input => input.setAttribute('required', 'required'));
+        } else {
+            // Default state when no specific category is selected, or initial load
+            conexionDiv.style.display = "none";
+            hidaDiv.style.display = "none";
+            internetLentoDiv.style.display = "none";
+            // By default, lights are required
+            lucesPonInputs.forEach(input => input.setAttribute('required', 'required'));
+        }
+    }
+
+    // Event listener for the change in the category select
+    categoriaSelect.addEventListener("change", mostrarOcultarDiv);
+
+    // Initial call to set correct visibility and required attributes on page load
+    mostrarOcultarDiv();
+
+    // Custom validation on form submission
+    reportForm.addEventListener('submit', function (event) {
+        event.preventDefault(); // Prevent form submission by default
+        let formIsValid = true;
+        let firstInvalidElement = null; // To keep track of the first invalid element for scrolling
+
+        // --- Validate Categoria de falla ---
+        if (categoriaSelect.value === "") {
+            showValidationFeedback(categoriaSelect, false);
+            formIsValid = false;
+            if (!firstInvalidElement) firstInvalidElement = categoriaSelect;
+        } else {
+            showValidationFeedback(categoriaSelect, true);
+        }
+
+        // --- Validate Falla por desconexion if visible and required ---
+        if (conexionDiv.style.display === "block" && fallaConexionSelect.hasAttribute('required') && fallaConexionSelect.value === "") {
+            showValidationFeedback(fallaConexionSelect, false);
+            formIsValid = false;
+            if (!firstInvalidElement) firstInvalidElement = fallaConexionSelect;
+        } else if (conexionDiv.style.display === "block") {
+            showValidationFeedback(fallaConexionSelect, true);
+        }
+
+        // --- Validate Falla por hida y venida if visible and required ---
+        if (hidaDiv.style.display === "block" && fallaHidaSelect.hasAttribute('required') && fallaHidaSelect.value === "") {
+            showValidationFeedback(fallaHidaSelect, false);
+            formIsValid = false;
+            if (!firstInvalidElement) firstInvalidElement = fallaHidaSelect;
+        } else if (hidaDiv.style.display === "block") {
+            showValidationFeedback(fallaHidaSelect, true);
+        }
+
+        // --- Validate Description ---
+        if (descripcionTextArea.value.trim() === "") {
+            showValidationFeedback(descripcionTextArea, false);
+            formIsValid = false;
+            if (!firstInvalidElement) firstInvalidElement = descripcionTextArea;
+        } else {
+            showValidationFeedback(descripcionTextArea, true);
+        }
+
+        // --- Validate Prueba de velocidad if visible and required ---
+        let imageIsMissing = false;
+        if (internetLentoDiv.style.display === "block" && pruebaVelocidadInput.hasAttribute('required') && pruebaVelocidadInput.files.length === 0) {
+            showValidationFeedback(pruebaVelocidadInput, false);
+            formIsValid = false;
+            imageIsMissing = true; // Flag that image is missing
+            if (!firstInvalidElement) firstInvalidElement = pruebaVelocidadInput;
+        } else if (internetLentoDiv.style.display === "block") {
+            showValidationFeedback(pruebaVelocidadInput, true);
+        }
+
+        // --- Validate Luces ONT/modem radio buttons using the custom message ---
+        let lucesSelected = false;
+        // Check if the lights are currently marked as required by our JS logic
+        if (lucesPonInputs.length > 0 && lucesPonInputs[0].hasAttribute('required')) {
+            for (let i = 0; i < lucesPonInputs.length; i++) {
+                if (lucesPonInputs[i].checked) {
+                    lucesSelected = true;
+                    break;
+                }
+            }
+            if (!lucesSelected) {
+                // Show the large red message for lights if they are not selected AND are required
+                showCustomRadioErrorMessage(true);
+                formIsValid = false;
+                // Don't set firstInvalidElement here, as the custom message is handled separately for scrolling.
+                // The scrolling logic below will prioritize this custom message.
+            } else {
+                showCustomRadioErrorMessage(false); // Hide the large red message
+            }
+        } else { // If lights are NOT required for the current category
+             showCustomRadioErrorMessage(false); // Ensure message is hidden
+        }
+        // Apply is-invalid to radio inputs for visual cue even with custom message
+        lucesPonInputs.forEach(radio => {
+            if (lucesPonInputs.length > 0 && lucesPonInputs[0].hasAttribute('required') && !lucesSelected) {
+                radio.classList.add('is-invalid');
+            } else {
+                radio.classList.remove('is-invalid');
+            }
+        });
+
+
+        // --- Final Submission Logic and Scrolling ---
+        if (formIsValid) {
+            reportForm.submit(); // Submit the form if all checks pass
+        } else {
+            reportForm.classList.add('was-validated');
+
+            // Prioritize scrolling to the custom luces message if it's shown
+            if (customLucesErrorMessage.style.display === 'block') {
+                const radioGroupLabel = document.querySelector('label[for=""]'); // Target the "Luces ONT/Luces del modem" label
+                if (radioGroupLabel) {
+                     radioGroupLabel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            } else if (firstInvalidElement) {
+                // If the custom luces message is not shown, scroll to the first regular invalid field
+                firstInvalidElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+    });
+
+    // Add event listeners for instant validation feedback on change for selects and textarea
+    categoriaSelect.addEventListener('change', function() {
+        showValidationFeedback(this, this.value !== "");
+    });
+    fallaConexionSelect.addEventListener('change', function() {
+        showValidationFeedback(this, this.value !== "");
+    });
+    fallaHidaSelect.addEventListener('change', function() {
+        showValidationFeedback(this, this.value !== "");
+    });
+    descripcionTextArea.addEventListener('input', function() {
+        showValidationFeedback(this, this.value.trim() !== "");
+    });
+
+    // Event listener for any change within the radio button group
+    lucesPonInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            let anyRadioChecked = Array.from(lucesPonInputs).some(radio => radio.checked);
+            // Determine if lights are required based on the *current* category selected
+            const lightsAreRequired = (categoriaSelect.value === "Sin conexión a internet" || categoriaSelect.value === "Servicio Intermitente" || categoriaSelect.value === "lento");
+            showCustomRadioErrorMessage(lightsAreRequired && !anyRadioChecked);
+
+            // Apply is-invalid to radios for visual cue
+            lucesPonInputs.forEach(radio => {
+                if (lightsAreRequired && !anyRadioChecked) {
+                    radio.classList.add('is-invalid');
+                } else {
+                    radio.classList.remove('is-invalid');
+                }
+            });
+        });
+    });
+
+    // Add event listener for the file input
+    pruebaVelocidadInput.addEventListener('change', function() {
+        showValidationFeedback(this, this.files.length > 0);
+    });
+
+</script>
+{% endblock %}

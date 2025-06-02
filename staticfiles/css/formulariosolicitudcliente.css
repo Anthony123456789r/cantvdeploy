@@ -1,0 +1,6 @@
+ /* Adjust the column padding if necessary to accommodate wider fields */
+    #clientFormContainer .col-12 {
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Center the content within the column */
+    }

@@ -1,0 +1,90 @@
+{% extends "modulos/plantillaModuleTecnico.html" %}
+{% block titulo %} Reportes asignados {% endblock %}
+{% block content %}
+
+<h1>historial de reportes del tecnico {{titulo_tecnico}}</h1>
+<div class="card mb-5">
+    <div class="card-header">
+    </div>
+    <div class="card-body">
+        <h4 class="card-title">Reportes por atender</h4>
+        <div class="table-responsive">
+            <table class="table table-primary">
+                <thead>
+                    <tr>
+                        <th scope="col">Categoria</th>
+                        <th scope="col">Nombre de cliente</th>
+                        <th scope="col">C.I</th>
+                        <th scope="col">Fecha del reporte</th>
+                        <th scope="col">estatus</th>
+                        <th scope="col">accion</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for empleado in reportes %}
+                    <tr>
+                        <td>{{ empleado.DatosReporteCliente.categoria}}</td>
+                        <td>{{ empleado.Datos_Cliente.nombre}}</td>
+                        <td>{{ empleado.Datos_Cliente.cedula}}</td>
+                        <td>{{ empleado.DatosReporteCliente.formatted_fecha}}</td>
+                        <td>{{ empleado.status.estadoReporter}}</td>
+                        <td>
+                            <form action="{% url 'reportesAsignados' %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="id_reporte_asignado" value="{{empleado.id}}">
+                                <input type="hidden" name="nombre_tecnico" value="{{empleado.nombre_tecnico.nombre}}">
+                                <input id="" class="btn btn-primary" type="submit" value="Gestionado">
+                            </form>
+                        </td>
+                        <td>
+                            <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#reporte-{{empleado.id}}-info" aria-expanded="false"
+                                aria-controls="reporte-{{empleado.id}}-info">
+                                Información detallada
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="6">
+                            <div class="collapse" id="reporte-{{empleado.id}}-info">
+                                <table class="table table-danger">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Descripcion del cliente</th>
+                                            <th scope="col">Tipo de luz</th>
+                                            {% if empleado.DatosReporteCliente.capture %}
+                                            <th scope="col">Imagen de velocidad</th>
+                                            {% else %}
+                                            <th scope="col"></th>
+                                            {% endif %}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><textarea name="" id="" cols="30" rows="5"
+                                                    disabled>{{ empleado.DatosReporteCliente.description}}</textarea>
+                                            </td>
+                                            <td>{{ empleado.DatosReporteCliente.luces}}</td>
+                                            {% if empleado.DatosReporteCliente.capture %}
+                                            <td><a name="" id="" class="btn btn-danger"
+                                                    href="{{ empleado.DatosReporteCliente.capture.url }}"
+                                                    target="_blank" role="button">ver imagen</a></td>
+                                            {% else %}
+                                            <td></td>
+                                            {% endif %}
+                                        </tr>
+                                        <!-- Agrega más filas según los títulos e información adicional que necesites mostrar -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

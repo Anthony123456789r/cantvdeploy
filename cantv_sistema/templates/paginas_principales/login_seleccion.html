@@ -1,0 +1,54 @@
+{% extends "plantilla_paginas.html" %}
+{% load static %}
+{% block titulo %} Seleccion de logueo {% endblock %}
+{% block content %}
+
+<body>
+    
+    <section class="vh-100">
+        <style>
+            .video-container {
+                position: fixed;
+                bottom: 0;
+                right: 0;
+            }
+        </style>
+        <video src="{% static 'bot_andrea.mp4' %}" width="150" height="150" class="video-container" autoplay muted></video>
+        <div class="container py-5 h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col col-xl-10">
+                    <div class="card" style="border-radius: 1rem;">
+                        <div class="row g-0">
+                            <div class="col-md-6 col-lg-7 d-flex align-items-center">
+                                <div class="card-body p-4 p-lg-5 text-black">
+                                    <div class="formulario">
+                                        <form action="" method="POST">
+                                            {% csrf_token %}
+                                            <h1 class="h3 mb-3 fw-normal">Seleccion como iniciara sesion</h1>
+                                            <div class="form-floating">
+                                                <div class="mb-3">
+                                                    <select class="form-select form-select-lg" name="login_select" id="">
+                                                        <option selected>Seleccione:</option>
+                                                        <option value="cliente">Cliente de cantv</option>
+                                                        <option value="sistema">personal de cantv</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <input type="submit" value="Iniciar Sesion">
+                                            </div>
+                                            {{mensaje}}
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+
+
+{% endblock %}

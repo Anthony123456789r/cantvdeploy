@@ -1,0 +1,32 @@
+{% extends "modulos/plantillaModuleSub.html" %}
+{% block titulo %} Panel principal{% endblock %}
+{% block content %}
+
+<h1>Reportes de los clientes</h1>
+<div class="table-responsive">
+    <table class="table table-primary">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Categoria</th>
+                <th scope="col">Descripcion</th>
+                <th scope="col">C.I</th>
+                <th scope="col">Fecha</th>
+            </tr>
+        </thead>
+        <tbody>
+           {% for historial in historialCliente %}
+            <tr>
+                <th>{{historial.id}}</th>
+                <th>{{historial.categoria}}</th>
+                <th>{{historial.falla}}</th>
+                <th>{{historial.cedula_cliente}}</th>
+                <th>{{historial.formatted_fecha}}</th>
+            </tr>
+          {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+{% endblock %}

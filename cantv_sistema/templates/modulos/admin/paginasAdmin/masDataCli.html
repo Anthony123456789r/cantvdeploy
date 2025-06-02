@@ -1,0 +1,182 @@
+{% extends "modulos/plantillaModule.html" %}
+{% block titulo %} Reportes y solicitudes {% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center align-items-center g-2">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Reportes en Proceso</h4>
+                    <div class="table-responsive">
+                        <table class="table table-primary">
+                            <thead>
+                                <tr>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Nombre</th>
+                                    <th scope="col">Apellido</th>
+                                    <th scope="col">Consultar</th>
+                                    <!-- <th scope="col">Status</th>
+                                    <th scope="col">Categoria de falla</th>
+                                    <th scope="col">Tipo de falla</th>
+                                    <th scope="col">Tecnico asignado</th>
+                                    <th scope="col">fecha de creacion</th> -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for data in data_cli%}
+                                <tr class="">
+                                    <td scope="row">{{data.id}}</td>
+                                    <td>{{data.nombre}}</td>
+                                    <td>{{data.apellido}}</td>
+                                    <td>
+                                            <a class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#reportesId-{{data.id}}" aria-expanded="false"
+                                            aria-controls="contentId">
+                                                Reportes en proceso
+                                            </a>
+                                            |
+                                            <a class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#reportes_te_Id-{{data.id}}"
+                                                aria-expanded="false" aria-controls="contentId">
+                                               Reportes de solicitudes
+                                            </a>
+                                        <div class="collapse" id="reportesId-{{data.id}}">
+                                            <div class="table-responsive">
+                                                <table class="table table-primary" id="reportesTable">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">ID</th>
+                                                            <th scope="col">Categoria</th>
+                                                            <th scope="col">Falla</th>
+                                                            <th scope="col">Tipo de luz</th>
+                                                            <th scope="col">status</th>
+                                                            <th scope="col">Tecnico asignado</th>
+                                                            <th scope="col">Fecha de creacion</th>
+                                                            <th scope="col">Tipo de reporte</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for data_cli in data_report_cli%}
+                                                        {% if data_cli.DatosReporteCliente.status.estadoReporter == "en proceso" and data.id == data_cli.Datos_Cliente.id %}
+                                                        <tr class="">
+                                                            <td scope="row">{{data_cli.id}}</td>
+                                                            <td>{{data_cli.DatosReporteCliente.categoria}}</td>
+                                                            <td>{{data_cli.DatosReporteCliente.falla}}</td>
+                                                            <td>{{data_cli.DatosReporteCliente.luces}}</td>
+                                                            <td>{{data_cli.DatosReporteCliente.status.estadoReporter}}</td>
+                                                            <td>{{data_cli.DatosTecnico.id}}</td>
+                                                            <td>{{data_cli.DatosReporteCliente.formatted_fecha}}</td>
+                                                            <td>{{data_cli.tipo_reporte.tipo}}</td>
+                                                        </tr>
+                                                        {% endif %}
+                                {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            
+                                        </div>
+                                        <div class="collapse" id="reportes_te_Id-{{data.id}}">
+                                            <div class="table-responsive">
+                                                <table class="table table-primary">
+                                                    <thead>
+                                                        <tr>
+                                                            <th scope="col">Peticion</th>
+                                                            <th scope="col">Contenido</th>
+                                                            <th scope="col">Tipo reporte</th>
+                                                            <th></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for peticion_data in data_peti %}
+                                                        {% if peticion_data.datosCliente.id == data.id %}
+                                                        <tr class="">
+                                                            {% if peticion_data.peticion == "retiroServicio" %}
+                                                            <td scope="row">{{peticion_data.peticion}}</td>
+                                                            <td>{{peticion_data.tema}}</td>
+                                                            <td>{{peticion_data.tipo_de_reporte.tipo}}</td>
+                                                            <td>
+                                                                <a type="button" class="btn btn-outline-danger" href="{% url 'elimServicio' data.id %}">Retirar servicio</a>
+                                                            
+                                                            </td>
+                                                            {% else %}
+                                                            <td scope="row">{{peticion_data.peticion}}</td>
+                                                            <td>{{peticion_data.tema}}</td>
+                                                            <td>{{peticion_data.tipo_de_reporte.tipo}}</td>
+                                                            {% endif %}
+                                                        </tr>
+                                                        {% endif %}
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-12">
+
+        </div>
+    </div>
+</div>
+<script>
+    // Esperar a que el DOM se haya cargado completamente
+    document.addEventListener("DOMContentLoaded", function () {
+        var searchForms = document.getElementsByClassName("searchForm");
+
+        // Agregar el evento submit a cada formulario de búsqueda
+        for (var i = 0; i < searchForms.length; i++) {
+            searchForms[i].addEventListener("submit", function (e) {
+                e.preventDefault(); // Evitar que la página se recargue al enviar el formulario
+
+                // Obtener el formulario actual y su tabla asociada
+                var currentForm = e.target;
+                var currentTable = currentForm.nextElementSibling;
+
+                // Obtener el valor ingresado en el input del formulario actual
+                var searchString = currentForm.querySelector(".form-control").value.toLowerCase().trim();
+
+                // Obtener todas las filas de la tabla actual
+                var tableRows = currentTable.getElementsByTagName("tr");
+
+                // Recorrer todas las filas de la tabla para buscar el término ingresado
+                for (var j = 0; j < tableRows.length; j++) {
+                    var row = tableRows[j];
+
+                    // Verificar si alguna celda de la fila contiene el término buscado
+                    var cells = row.getElementsByTagName("td");
+                    var found = false;
+                    for (var k = 0; k < cells.length; k++) {
+                        var cellText = cells[k].textContent.toLowerCase();
+
+                        // Si la celda contiene el término, agregar una clase para resaltarla
+                        if (cellText.includes(searchString)) {
+                            row.classList.add("highlight");
+                            found = true;
+                            break; // Salir del bucle interno si encuentra una coincidencia
+                        }
+                    }
+
+                    // Si no se encuentra ninguna coincidencia, remover la clase de resaltado
+                    if (!found) {
+                        row.classList.remove("highlight");
+                    }
+                }
+            });
+        }
+    });
+</script>
+
+<style>
+    /* Estilo para resaltar las filas que coinciden con la búsqueda */
+    .highlight {
+        background-color: orange;
+    }
+</style>
+
+{% endblock %}

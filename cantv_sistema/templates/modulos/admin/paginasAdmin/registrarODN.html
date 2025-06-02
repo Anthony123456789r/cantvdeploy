@@ -1,0 +1,144 @@
+{% extends "modulos/plantillaModule.html" %}
+
+{% load static %}
+
+{% block titulo %} Registrar ODN {% endblock %}
+
+{% block content %}
+
+    <div class="container" id="clientFormContainer">
+        <form action="{% url 'regisODN' %}" method="POST" id="clientForm" novalidate>
+            {% csrf_token %}
+            <h2 class="mb-4">Registro de ODN</h2>
+
+            <div class="row g-3" style="width: 100%;">
+                <div class="col-12">
+                    <label for="odn" class="form-label">ODN:</label>
+                    <input type="text" name="odn" id="odn" class="form-control" placeholder="Escriba la ODN" required pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" value="{{ request_post.odn }}">
+                    <div class="invalid-feedback">
+                        La ODN solo puede contener letras y espacios.
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label for="olt" class="form-label">OLT:</label>
+                    <input type="text" name="olt" id="olt" class="form-control" placeholder="Escriba el Nombre de la OLT" required pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" value="{{ request_post.olt }}">
+                    <div class="invalid-feedback">
+                        El nombre solo puede contener letras.
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label for="cantidadFAT" class="form-label">Cantidad Fat:</label>
+                    {# CORRECTED: Changed name and id to 'cantidadFAT' to match Django view #}
+                    <input type="number" name="cantidadFAT" id="cantidadFAT" class="form-control" placeholder="Escriba la cantidad de FAT" required value="{{ request_post.cantidadFAT }}">
+                    <div class="invalid-feedback">
+                        La Cantidad Fat solo puede contener números.
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <label for="direccion" class="form-label">Direccion:</label>
+                    <input type="text" name="direccion" id="direccion" class="form-control" placeholder="Escriba la Dirección " required value="{{ request_post.direccion }}">
+                    <div class="invalid-feedback">
+                        La dirección es obligatoria.
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label for="observacionOdn" class="form-label">Observaciones:</label>
+                    <textarea name="observacionOdn" id="observacionOdn" class="form-control" placeholder="Escriba La Observacion" rows="1" pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*">{{ request_post.observacionOdn }}</textarea>
+                    {# Changed pattern to allow empty for optional field, or make it required if truly needed #}
+                    <div class="invalid-feedback">
+                        La observación solo puede contener letras y espacios.
+                    </div>
+                </div>
+                <div class="text-center-btn col-12">
+                    <button type="submit" class="btn btn-primary" id="submitBtn" style="max-width: 550px;">Registrar ODN</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('clientForm');
+            
+            const observacionOdnInput = document.getElementById('observacionOdn');
+            if (observacionOdnInput) {
+                // Function to adjust the height of a textarea dynamically
+                function adjustTextareaHeight(element) {
+                    element.style.height = 'auto';
+                    element.style.height = (element.scrollHeight) + 'px';
+                }
+                observacionOdnInput.addEventListener('input', function() {
+                    adjustTextareaHeight(this);
+                });
+                // Adjust height on load in case there's pre-filled content
+                adjustTextareaHeight(observacionOdnInput); 
+            }
+
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+
+            Array.from(form.elements).forEach(input => {
+                input.addEventListener('input', validateInput);
+                input.addEventListener('blur', validateInput);
+            });
+
+            function validateInput() {
+                const input = this;
+
+                // Custom validity for number inputs
+                if (input.type === 'number') {
+                    if (isNaN(input.value) && input.value !== '') {
+                        input.setCustomValidity('Por favor, introduzca un número válido.');
+                    } else {
+                        input.setCustomValidity('');
+                    }
+                }
+                
+                // For text inputs with patterns (like ODN, OLT, Observacion)
+                if (input.hasAttribute('pattern') && input.value !== '') {
+                    const pattern = new RegExp(input.getAttribute('pattern'));
+                    if (!pattern.test(input.value)) {
+                        // Set custom validity message based on the input's specific requirement
+                        if (input.id === 'odn') {
+                            input.setCustomValidity('La ODN solo puede contener letras y espacios.');
+                        } else if (input.id === 'olt') {
+                            input.setCustomValidity('El OLT solo puede contener letras y espacios.');
+                        } else if (input.id === 'observacionOdn') {
+                            input.setCustomValidity('La observación solo puede contener letras y espacios.');
+                        }
+                    } else {
+                        input.setCustomValidity(''); // Clear custom validity if pattern matches
+                    }
+                } else if (input.hasAttribute('required') && input.value.trim() === '') {
+                     input.setCustomValidity('Este campo es obligatorio.');
+                } else {
+                    input.setCustomValidity(''); // Clear any custom validity if not covered by specific rules
+                }
+
+
+                if (input.checkValidity()) {
+                    input.classList.remove('is-invalid');
+                    input.classList.add('is-valid');
+                } else {
+                    input.classList.remove('is-valid');
+                    input.classList.add('is-invalid');
+                }
+            }
+        });
+    </script>
+    {% if mensaje %}
+<script>
+    mensajeError("{{mensaje}}")
+</script>
+{% elif mensaje1 %}
+<script>
+    mensajeExito("{{mensaje1}}")
+</script>
+{% endif %}
+
+{% endblock %}

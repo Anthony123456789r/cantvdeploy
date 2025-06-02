@@ -1,0 +1,109 @@
+{% extends "modulos/plantillaModule.html" %}
+
+{% load static %}
+
+{% block titulo %} Creación de Sub Administradores {% endblock %}
+
+{% block content %}
+
+    <div class="container" id="clientFormContainer">
+        <form action="" method="POST" id="clientForm" novalidate>
+            {% csrf_token %}
+            <h2 class="mb-4">Registro Sub Admin</h2>
+
+            <div class="row g-3" style="width: 100%;">
+
+                <div class="col-12">
+                    <label for="subAdmin" class="form-label">Nombre</label>
+                    <input type="text" name="subAdmin" id="subAdmin" class="form-control" placeholder="Escriba el Nombre del Sub Admin" required pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" value="{{ request_post.SubAdmin|default_if_none:'' }}">
+                    <div class="invalid-feedback">
+                        El nombre solo puede contener letras.
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label for="apellidoSubAdmin" class="form-label">Apellido:</label>
+                    <input type="text" name="apellidoSubAdmin" id="apellidoSubAdmin" class="form-control" placeholder="Escriba el Apellido del Sub Admin" required pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" value="{{ request_post.apellidoSubAdmin|default_if_none:'' }}">
+                    <div class="invalid-feedback">
+                        El apellido solo puede contener letras.
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label for="direccion" class="form-label">Dirección:</label>
+                    <input type="text" name="direccion" id="direccion" class="form-control" placeholder="Escriba la Dirección del Sub Admin" required value="{{ request_post.direccion|default_if_none:'' }}">
+                    <div class="invalid-feedback">
+                        La dirección es obligatoria.
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label for="cedulaSubAdmin" class="form-label">C.I:</label>
+                    {# CAMBIADO: name="cedulaSudAdmin" a name="cedulaSubAdmin" #}
+                    <input type="text" name="cedulaSubAdmin" id="cedulaSubAdmin" class="form-control" placeholder="Escriba la C.I. del Sub Admin" required pattern="[0-9]+" value="{{ request_post.cedulaSubAdmin|default_if_none:'' }}">
+                    <div class="invalid-feedback">
+                        La C.I. solo puede contener números.
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label for="telefono" class="form-label">Contacto:</label>
+                    <input type="tel" name="telefono" id="telefono" class="form-control" placeholder="Escriba el Teléfono del Sub Admin" required pattern="[0-9]+" value="{{ request_post.telefono|default_if_none:'' }}">
+                    <div class="invalid-feedback">
+                        El contacto solo puede contener números.
+                    </div>
+                </div>
+                <div class="text-center-btn col-12">
+                    <button type="submit" class="btn btn-primary" id="submitBtn" style="max-width: 550px;">Registrar Sub Admin</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('clientForm');
+
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+
+            Array.from(form.elements).forEach(input => {
+                input.addEventListener('input', validateInput);
+                input.addEventListener('blur', validateInput);
+            });
+
+            function validateInput() {
+                const input = this;
+
+                if (input.type === 'number') {
+                    if (isNaN(input.value) && input.value !== '') {
+                        input.setCustomValidity('Por favor, introduzca un número válido.');
+                    } else {
+                        input.setCustomValidity('');
+                    }
+                }
+
+                if (input.checkValidity()) {
+                    input.classList.remove('is-invalid');
+                    input.classList.add('is-valid');
+                } else {
+                    input.classList.remove('is-valid');
+                    input.classList.add('is-invalid');
+                }
+            }
+        });
+    </script>
+
+    {% if mensaje %}
+<script>
+    mensajeError("{{mensaje}}")
+</script>
+{% elif mensaje1 %}
+<script>
+    mensajeExito("{{mensaje1}}")
+</script>
+{% endif %}
+
+
+{% endblock %}

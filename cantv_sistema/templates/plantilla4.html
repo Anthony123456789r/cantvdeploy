@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %} {% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/estilos1cantv.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/registro.css' %}">
+    <link rel="stylesheet" href="{% static 'js/package/dist/sweetalert2.min.css' %}">
+    <script src="{% static 'js/package/dist/sweetalert2.all.min.js' %}"></script>
+    <script src="{% static 'js/alertas.js' %}"></script>
+</head>
+<body>
+
+    <header>
+        <nav>
+            <label for="" class="brand">
+                <a href=""><img src="{% static 'css/img/Cantv_logo.png' %}"></a>
+            </label>
+            <a href="{% url 'loginSistema' %}">Login</a>
+            <a href="{% url 'registro' %}">registro</a>
+        </nav>
+        <br>
+        <br>
+        <section class="textos-header">
+            <h1>{% block subtitulo %} {% endblock %}</h1>
+        </section>
+    </header>
+    <main>
+        {% block content %}
+
+        {% endblock %}
+    </main>
+    <footer>
+        <div class="contenedor-footer">
+            <div class="content-foo">
+                <h4>Teléfono</h4>
+                <p>+ 58 425 874 21</p>
+            </div>
+            <div class="content-foo">
+                <h4>Instagram</h4>
+                <p>@cantv.ve</p>
+            </div>
+            <div class="content-foo">
+                <h4>Twitter</h4>
+                <p>@AbaCantv</p>
+            </div>
+
+        </div>
+        <h6 class="titulo-final">CANTV Táchira</h6>
+        <p>CANTV (Compañía Anónima Nacional Teléfonos de Venezuela) es una empresa de
+            telecomunicaciones estatal de Venezuela.
+            Fundada en 1930, CANTV es la compañía telefónica más grande y antigua de Venezuela y
+            provee servicios de telefonía fija,
+            móvil, Internet y televisión por suscripción a hogares, empresas y organismos
+            gubernamentales en todo el país.</p>
+        <h6 class="titulo-final">© 2023 Copyright Venezuela,Táchira-San Cristobal Cantv.com </h6>
+    </footer>
+</body>
+
+</html>

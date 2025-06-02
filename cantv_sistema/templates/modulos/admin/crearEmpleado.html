@@ -1,0 +1,183 @@
+{% extends "modulos/plantillaModule.html" %}
+
+{% load static %}
+
+{% block titulo %} Creacion de empleados {% endblock %}
+
+{% block content %}
+
+ <div class="container" id="clientFormContainer">
+        {# CORRECCIÓN CLAVE: action del formulario apunta al nombre de URL correcto 'registroCliente' #}
+        <form action="" method="POST" id="clientForm" novalidate>
+            {% csrf_token %}
+            <h2 class="mb-4">Registro de Técnico</h2>
+
+            <div class="row g-3" style="width: 100%;">
+
+                <div class="col-12">
+                    <label for="empleado" class="form-label">Nombre</label>
+                    <input type="text" name="empleado" id="empleado" class="form-control" placeholder="Escriba el Nombre del técnico" required pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" value="{{ request_post.empleado|default_if_none:'' }}">
+                    <div class="invalid-feedback">
+                        El nombre solo puede contener letras.
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label for="apellidoEmplado" class="form-label">Apellido:</label>
+                    <input type="text" name="apellidoEmpleado" id="apellidoEmpleado" class="form-control" placeholder="Escriba el Apellido del técnico" required pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" value="{{ request_post.apellidoEmpleado|default_if_none:'' }}">
+                    <div class="invalid-feedback">
+                        El apellido solo puede contener letras.
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label for="direccion" class="form-label">Dirección:</label>
+                    <input type="text" name="direccion" id="direccion" class="form-control" placeholder="Escriba la Dirección del técnico" required value="{{ request_post.direccion|default_if_none:'' }}">
+                    <div class="invalid-feedback">
+                        La dirección es obligatoria.
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label for="cedulaEmpleado" class="form-label">C.I:</label>
+                    <input type="text" name="cedulaEmpleado" id="cedulaEmpleado" class="form-control" placeholder="Escriba la C.I. del técnico" required pattern="[0-9]+" value="{{ request_post.cedulaEmpleado|default_if_none:'' }}">
+                    <div class="invalid-feedback">
+                        La C.I. solo puede contener números.
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label for="telefono" class="form-label">Contacto:</label>
+                    <input type="tel" name="telefono" id="telefono" class="form-control" placeholder="Escriba el Teléfono del técnico" required pattern="[0-9]+" value="{{ request_post.telefono|default_if_none:'' }}">
+                    <div class="invalid-feedback">
+                        El contacto solo puede contener números.
+                    </div>
+                </div>
+                <div class="text-center-btn col-12">
+                    <button type="submit" class="btn btn-primary" id="submitBtn" style="max-width: 550px;">Registrar Tecnico</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('clientForm');
+            // Remove the unused elements that are not in this form,
+            // or ensure they are present if they are relevant to your wider application.
+            // const cuadrillaInput = document.getElementById('cuadrilla');
+            // const odnSelect = document.getElementById('odnSelect');
+            // const fatSelect = document.getElementById('fatSelect');
+
+            // Function to adjust the height of the textarea (if you reintroduce one)
+            // function adjustTextareaHeight(element) {
+            //     element.style.height = 'auto';
+            //     element.style.height = (element.scrollHeight) + 'px';
+            // }
+
+            // Adjust the height of the textarea of cuadrilla when writing and at the beginning
+            // if (cuadrillaInput) {
+            //     cuadrillaInput.addEventListener('input', function() {
+            //         adjustTextareaHeight(this);
+            //     });
+            //     adjustTextareaHeight(cuadrillaInput);
+            // }
+
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+
+            // Add Bootstrap validation styles on input change and blur
+            Array.from(form.elements).forEach(input => {
+                input.addEventListener('input', validateInput);
+                input.addEventListener('blur', validateInput);
+            });
+
+            // Reusable validation function
+            function validateInput() {
+                const input = this;
+
+                // Custom validity for number type inputs
+                if (input.type === 'number') {
+                    if (isNaN(input.value) && input.value !== '') {
+                        input.setCustomValidity('Por favor, introduzca un número válido.');
+                    } else {
+                        input.setCustomValidity('');
+                    }
+                }
+
+                // Special handling for email input (if you add an email field)
+                // if (input.type === 'email') {
+                //     if (input.value.trim() === '') {
+                //         input.setCustomValidity('El correo electrónico es obligatorio.');
+                //     } else if (input.validity.typeMismatch) {
+                //         input.setCustomValidity('Por favor, introduzca un correo electrónico válido.');
+                //     } else {
+                //         input.setCustomValidity('');
+                //     }
+                // }
+
+                // Set validation classes
+                if (input.checkValidity()) {
+                    input.classList.remove('is-invalid');
+                    input.classList.add('is-valid');
+                } else {
+                    input.classList.remove('is-valid');
+                    input.classList.add('is-invalid');
+                }
+            }
+
+            // Remove jQuery for dynamic FAT selection if not needed for this form
+            // Or ensure jQuery is loaded and these elements exist if they are part of a larger template.
+            // if (odnSelect && fatSelect) {
+            //     $(odnSelect).on("change", function () {
+            //         var selectedOdn = $(this).val();
+            //         $(fatSelect).find('option:gt(0)').remove();
+            //         if (selectedOdn) {
+            //             $.ajax({
+            //                 url: "/obtener_fats/",
+            //                 data: { 'odn_id': selectedOdn },
+            //                 dataType: 'json',
+            //                 success: function (data) {
+            //                     const numberOfFats = parseInt(data.number_of_fats);
+            //                     for (let i = 1; i <= numberOfFats; i++) {
+            //                         $(fatSelect).append($('<option></option>')
+            //                             .attr('value', i)
+            //                             .text('FAT' + i)
+            //                         );
+            //                     }
+            //                     const storedFat = "{{ request_post.fat }}";
+            //                     if (storedFat) {
+            //                         $(fatSelect).val(storedFat);
+            //                     }
+            //                     fatSelect.dispatchEvent(new Event('change'));
+            //                 },
+            //                 error: function (xhr, status, error) {
+            //                     console.error("Error al obtener los FATs:", error);
+            //                 }
+            //             });
+            //         } else {
+            //             fatSelect.dispatchEvent(new Event('change'));
+            //         }
+            //     });
+            //     const initialOdn = "{{ request_post.odn }}";
+            //     if (initialOdn) {
+            //         $(odnSelect).val(initialOdn);
+            //         $(odnSelect).trigger('change');
+            //     }
+            // }
+        });
+    </script>
+
+    {% if mensaje %}
+<script>
+    mensajeError("{{mensaje}}")
+</script>
+{% elif mensaje1 %}
+<script>
+    mensajeExito("{{mensaje1}}")
+</script>
+{% endif %}
+
+
+{% endblock %}

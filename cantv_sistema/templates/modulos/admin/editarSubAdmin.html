@@ -1,0 +1,81 @@
+{% extends "modulos/plantillaModule.html" %}
+{% load static %}
+{% block titulo %} Editar Técnico {% endblock %}
+{% block content %}
+
+<head>
+    <title>Editar Técnico</title>
+</head>
+
+<body>
+    <div class="client-edit-section">
+        <div class="card client-info-card">
+            <div class="card-header">
+                Información del Sub Admin
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled client-info-list">
+                    <li><strong>Nombre:</strong><span>{{ subadmin.nombre }}</span></li>
+                    <li><strong>Apellido:</strong><span>{{ subadmin.apellido }}</span></li>
+                    <li><strong>Teléfono:</strong><span>{{ subadmin.telefono }}</span></li>
+                    <li><strong>Dirección:</strong><span>{{ subadmin.direccion }} </span></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="clientFormContainer">
+        <form action="{% url 'editarSubAdmin' subadmin.id %}" method="POST" id="clientForm" novalidate>
+            {% csrf_token %}
+            <h2 class="client-edit-title" id="clientEditHeaderTitle">Editar Información Del Técnico</h2>
+
+            <div class="row g-3" style="width: 100%;">
+                <div class="col-12">
+                    <label for="nombre" class="form-label">Nombre:</label>
+                    <input type="text" name="nombre" id="nombre" class="form-control" placeholder="Escriba el nombre del técnico" required pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" value="{{ SubAdmin.nombre|default:'' }}">
+                    <div class="invalid-feedback">
+                        El nombre solo puede contener letras y espacios.
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label for="apellido" class="form-label">Apellido:</label>
+                    <input type="text" name="apellido" id="apellido" class="form-control" placeholder="Escriba el apellido del técnico" required pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" value="{{SubAdmin.apellido|default:'' }}">
+                    <div class="invalid-feedback">
+                        El apellido solo puede contener letras y espacios.
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label for="telefono" class="form-label">Teléfono:</label>
+                    <input type="tel" name="telefono" id="telefono" class="form-control" placeholder="Escriba el teléfono del técnico" required pattern="[0-9]{1,}" value="{{ SubAdmin.telefono|default:'' }}">
+                    <div class="invalid-feedback">
+                        El teléfono solo puede contener números.
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label for="direccion" class="form-label">Dirección:</label>
+                    <input type="text" name="direccion" id="direccion" class="form-control" placeholder="Escriba la dirección del técnico" required value="{{ SubAdmin.direccion|default:'' }}">
+                    <div class="invalid-feedback">
+                        La dirección es obligatoria.
+                    </div>
+                </div>
+
+                <div class="col-12 d-grid gap-2 d-md-block text-center" style="max-width: 550px; margin: 0 auto;">
+                    <button type="submit" class="btn btn-primary mb-2" id="submitBtn">Guardar cambios</button>
+                    <a href="{% url 'admin' %}" class="btn btn-danger client-cancel-btn">Cancelar</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+{% if mensaje %}
+<script>
+    mensajeError("{{ mensaje }}")
+</script>
+{% elif mensaje1 %}
+<script>
+    mensajeExito("{{mensaje1}}")
+</script>
+{% endif %}
+
+{% endblock %}

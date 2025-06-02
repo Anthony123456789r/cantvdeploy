@@ -1,0 +1,25 @@
+ /* Custom CSS for very dark table borders */
+    .table-dark-borders,
+    .table-dark-borders th,
+    .table-dark-borders td {
+        border-color: #212529 !important; /* A darker shade for borders, near black */
+    }
+
+    /* Optional: Style for the table cells to ensure consistent padding and vertical alignment */
+    .table-dark-borders th,
+    .table-dark-borders td {
+        padding: 0.75rem; /* Standard Bootstrap padding */
+        vertical-align: middle; /* Align content vertically in the middle */
+    }
+
+    /* Hover effect for buttons */
+    .btn-success:hover {
+        background-color:rgb(7, 7, 7); /* Slightly darker green on hover */
+        border-color:rgb(10, 10, 10);
+    }
+
+    /* Badge styling for better visual */
+    .badge {
+        font-weight: 600; /* Make badge text a bit bolder */
+        font-size: 0.85em; /* Slightly smaller font size for badges */
+    }

@@ -1,0 +1,258 @@
+{% extends "modulos/plantillaModule.html" %}
+
+{% load static %}
+
+{% block titulo %} Registrar nuevos suscriptores {% endblock %}
+
+{% block content %}
+
+    <div class="container" id="clientFormContainer">
+        {# CORRECCIÓN CLAVE: action del formulario apunta al nombre de URL correcto 'registroCliente' #}
+        <form action="{% url 'registroCliente' %}" method="POST" id="clientForm" novalidate>
+            {% csrf_token %}
+            <h2 class="mb-4">Registro de Cliente</h2>
+
+            <div class="row g-3" style="width: 100%;">
+                <div class="col-12">
+                    <label for="odnSelect" class="form-label">ODN:</label>
+                    <select name="odn" id="odnSelect" class="form-select" required>
+                        <option value="" selected disabled>Seleccione una ODN</option>
+                        {% for registroOdn in llamadarODN %}
+                            {# Usa request_post si pasaste el diccionario del POST #}
+                            <option value="{{ registroOdn.id }}" {% if request_post.odn == registroOdn.id|stringformat:"s" %}selected{% endif %}> {{ registroOdn.odn }}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="invalid-feedback">
+                        Por favor, seleccione una ODN.
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <label for="usuario" class="form-label">Usuario:</label>
+                    {# Usa request_post para rellenar el campo #}
+                    <input type="text" name="usuario" id="usuario" class="form-control" placeholder="Escriba el Nombre del cliente" required pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" value="{{ request_post.usuario }}">
+                    <div class="invalid-feedback">
+                        El nombre solo puede contener letras.
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label for="apellido" class="form-label">Apellido:</label>
+                    <input type="text" name="apellido" id="apellido" class="form-control" placeholder="Escriba el Apellido del cliente" required pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+" value="{{ request_post.apellido }}">
+                    <div class="invalid-feedback">
+                        El apellido solo puede contener letras.
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label for="ci" class="form-label">C.I:</label>
+                    <input type="text" name="ci" id="ci" class="form-control" placeholder="Escriba la C.I. del cliente" required pattern="[0-9]+" value="{{ request_post.ci }}">
+                    <div class="invalid-feedback">
+                        La C.I. solo puede contener números.
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label for="contacto" class="form-label">Contacto:</label>
+                    <input type="tel" name="contacto" id="contacto" class="form-control" placeholder="Escriba el Teléfono del cliente" required pattern="[0-9]+" value="{{ request_post.contacto }}">
+                    <div class="invalid-feedback">
+                        El contacto solo puede contener números.
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label for="correo" class="form-label">Correo:</label>
+                    <input type="email" name="correo" id="correo" class="form-control" placeholder="Escriba el Correo del cliente" required value="{{ request_post.correo }}">
+                    <div class="invalid-feedback">
+                        Por favor, introduzca un correo electrónico válido.
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label for="direccion" class="form-label">Direccion:</label>
+                    <input type="text" name="direccion" id="direccion" class="form-control" placeholder="Escriba la Dirección del cliente" required value="{{ request_post.direccion }}">
+                    <div class="invalid-feedback">
+                        La dirección es obligatoria.
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label for="plan" class="form-label">Plan o Servicio:</label>
+                    <select name="plan" id="plan" class="form-select" required>
+                        <option value="" selected disabled>Seleccione un plan</option>
+                        <option value="aba ultra 60mb" {% if request_post.plan == "aba ultra 60mb" %}selected{% endif %}>Aba ultra 60mb</option>
+                        <option value="aba ultra 100mb" {% if request_post.plan == "aba ultra 100mb" %}selected{% endif %}>Aba ultra 100mb</option>
+                        <option value="aba ultra 200mb" {% if request_post.plan == "aba ultra 200mb" %}selected{% endif %}>Aba ultra 200mb</option>
+                        <option value="aba ultra 300mb" {% if request_post.plan == "aba ultra 300mb" %}selected{% endif %}>Aba ultra 300mb</option>
+                    </select>
+                    <div class="invalid-feedback">
+                        Por favor, seleccione un plan.
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label for="cuadrilla" class="form-label">Cuadrilla:</label>
+                    <textarea name="cuadrilla" id="cuadrilla" class="form-control" placeholder="Escriba el nombre de la cuadrilla" rows="1" required pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+">{{ request_post.cuadrilla }}</textarea>
+                    <div class="invalid-feedback">
+                        La cuadrilla solo puede contener letras.
+                    </div>
+                </div>
+
+                <hr class="divider-line">
+
+                <h2 class="mt-4">Datos Técnicos</h2>
+                <div class="col-12">
+                    <label for="fatSelect" class="form-label">Fat:</label>
+                    <select class="form-select" name="fat" id="fatSelect" aria-label="multiple select example" required>
+                        <option value="" selected disabled>Seleccione una opción de Fat</option>
+                        {# Este bucle ya no es estrictamente necesario si AJAX funciona, pero es un buen fallback #}
+                        {# O puedes eliminarlo si solo quieres que los FATs se carguen vía AJAX #}
+                        {# Sin embargo, si quieres que el FAT seleccionado persista en caso de error del formulario, este bucle puede ser útil #}
+                        {% for registroFat in llamarFAT %}
+                            <option value="{{ registroFat.id }}" {% if request_post.fat|stringformat:"s" == registroFat.id|stringformat:"s" %}selected{% endif %}> {{ registroFat.fat }}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="invalid-feedback">
+                        Por favor, seleccione al menos una opción de Fat.
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label for="posicion_fat" class="form-label">Posición Fat:</label>
+                    <input type="text" name="posicion_fat" id="posicion_fat" class="form-control" placeholder="Escriba la Posición de Fat" required pattern="[a-zA-Z0-9\s]+" value="{{ request_post.posicion_fat }}">
+                    <div class="invalid-feedback">
+                        La posición de Fat solo puede contener letras y números.
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label for="potencia_fat" class="form-label">Potencia Fat:</label>
+                    <input type="number" name="potencia_fat" id="potencia_fat" class="form-control" placeholder="Escriba la Potencia de Fat" required value="{{ request_post.potencia_fat }}">
+                    <div class="invalid-feedback">
+                        La potencia de Fat debe ser un número.
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label for="potencia_casa" class="form-label">Potencia Casa:</label>
+                    <input type="number" name="potencia_casa" id="potencia_casa" class="form-control" placeholder="Escriba la Potencia en Casa" required value="{{ request_post.potencia_casa }}">
+                    <div class="invalid-feedback">
+                        La potencia en Casa debe ser un número.
+                    </div>
+                </div>
+                <div class="text-center-btn col-12">
+                    <button type="submit" class="btn btn-primary" id="submitBtn" style="max-width: 550px;">Registrar Cliente</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('clientForm');
+            const cuadrillaInput = document.getElementById('cuadrilla');
+            const odnSelect = document.getElementById('odnSelect');
+            const fatSelect = document.getElementById('fatSelect');
+
+            // Función para ajustar la altura del textarea
+            function adjustTextareaHeight(element) {
+                element.style.height = 'auto';
+                element.style.height = (element.scrollHeight) + 'px';
+            }
+
+            // Ajustar la altura del textarea de cuadrilla al escribir y al inicio
+            cuadrillaInput.addEventListener('input', function() {
+                adjustTextareaHeight(this);
+            });
+            adjustTextareaHeight(cuadrillaInput);
+
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+
+            // Añadir estilos de validación de Bootstrap en cambio de entrada y al perder el foco
+            Array.from(form.elements).forEach(input => {
+                input.addEventListener('input', validateInput);
+                input.addEventListener('blur', validateInput);
+            });
+
+            // Función de validación reutilizable
+            function validateInput() {
+                const input = this;
+
+                // Validez personalizada para entradas de tipo número
+                if (input.type === 'number') {
+                    if (isNaN(input.value) && input.value !== '') {
+                        input.setCustomValidity('Por favor, introduzca un número válido.');
+                    } else {
+                        input.setCustomValidity('');
+                    }
+                }
+
+                // Manejo especial para la entrada de correo electrónico
+                if (input.type === 'email') {
+                    if (input.value.trim() === '') {
+                        input.setCustomValidity('El correo electrónico es obligatorio.');
+                    } else if (input.validity.typeMismatch) {
+                        input.setCustomValidity('Por favor, introduzca un correo electrónico válido.');
+                    } else {
+                        input.setCustomValidity('');
+                    }
+                }
+
+                // Establecer clases de validación
+                if (input.checkValidity()) {
+                    input.classList.remove('is-invalid');
+                    input.classList.add('is-valid');
+                } else {
+                    input.classList.remove('is-valid');
+                    input.classList.add('is-invalid');
+                }
+            }
+
+            // jQuery para la selección dinámica de FAT
+            $(odnSelect).on("change", function () {
+                var selectedOdn = $(this).val();
+
+                // Limpia las opciones existentes en la selección de FAT, manteniendo la opción predeterminada deshabilitada
+                $(fatSelect).find('option:gt(0)').remove();
+
+                if (selectedOdn) {
+                    $.ajax({
+                        url: "/obtener_fats/", // Asegúrate de que esta URL esté configurada en tu urls.py
+                        data: {
+                            'odn_id': selectedOdn
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            const numberOfFats = parseInt(data.number_of_fats);
+
+                            for (let i = 1; i <= numberOfFats; i++) {
+                                $(fatSelect).append($('<option></option>')
+                                    .attr('value', i) // El valor debe ser el ID del FAT
+                                    .text('FAT' + i)
+                                );
+                            }
+
+                            // Intenta seleccionar el FAT que venía en request.POST si existe
+                            // Usamos window.django_request_post_fat para acceder al valor
+                            const storedFat = "{{ request_post.fat }}";
+                            if (storedFat) {
+                                $(fatSelect).val(storedFat);
+                            }
+                            fatSelect.dispatchEvent(new Event('change')); // Disparar el evento change para que la validación funcione
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error al obtener los FATs:", error);
+                        }
+                    });
+                } else {
+                    // Si no hay ODN seleccionada, se resetea la validación de FAT
+                    fatSelect.dispatchEvent(new Event('change'));
+                }
+            });
+
+            // Activa el cambio al cargar si ya se seleccionó una ODN (ej. después de una petición POST)
+            // Se necesita una forma de pasar request.POST.odn a JS, por ejemplo, en una variable global o en un atributo data.
+            // Para simplificar, lo pasamos directamente a JavaScript.
+            const initialOdn = "{{ request_post.odn }}";
+            if (initialOdn) { // Solo si initialOdn no está vacío
+                $(odnSelect).val(initialOdn);
+                $(odnSelect).trigger('change');
+            }
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,217 @@
+/* Mantén tus estilos originales de body en su respectivo CSS file */
+/* ... (el CSS de tu body principal) ... */
+
+/* Estilos específicos para la sección de edición del cliente */
+.client-edit-section { /* NUEVO: Una clase envolvente para toda la parte de edición del cliente */
+    font-family: 'Roboto', sans-serif; /* Aplica la fuente aquí */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Alinea a la parte superior */
+    min-height: 100vh; /* Para que ocupe toda la altura de la ventana */
+    width: 100%; /* Asegura que ocupe todo el ancho */
+    box-sizing: border-box; /* Para que el padding no afecte el ancho total */
+    padding: 2rem 1rem; /* Añade un padding general para que la tarjeta no se pegue a los bordes en móviles */
+}
+
+/* Card Styles (Info and Edit Cards) - Ahora con los estilos del contenedor principal */
+.client-info-card,
+.client-edit-card {
+    border: none;
+    border-radius: 0.3rem; /* Más pequeño para un aspecto más ajustado */
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1); /* Sombra más pronunciada para el "cuadro blanco" */
+    margin-bottom: 1.5rem; /* Espacio reducido entre tarjetas si hay varias */
+    overflow: hidden;
+    max-width: 500px; /* Ancho máximo para la tarjeta */
+    width: 100%; /* Asegura que la tarjeta ocupe el ancho disponible hasta el max-width */
+    background-color: #ffffff; /* **Fondo blanco para la tarjeta, no para el contenedor** */
+}
+
+/* Card Header Styles */
+.client-info-card .card-header,
+.client-edit-card .card-header {
+    background-color: #007bff; /* Azul primario para el encabezado */
+    color: white; /* Color del texto del título blanco */
+    border-bottom: none;
+    padding: 0.6rem 1rem; /* Relleno del encabezado reducido */
+    text-align: center; /* Título centrado */
+    font-size: 1.25rem; /* Tamaño de fuente más grande para el título */
+    font-weight: 500;
+}
+
+/* Card Body Styles */
+.client-info-card .card-body,
+.client-edit-card .card-body {
+    padding: 1.5rem; /* Relleno reducido dentro de la tarjeta */
+    /* background-color: #fff;  Ya está en el card principal, no es necesario aquí */
+}
+
+/* Client Info List Styles */
+.client-info-list {
+    padding-left: 0;
+    margin-bottom: 0; /* Elimina el margen inferior predeterminado de ul */
+}
+
+.client-info-list li {
+    padding: 0.3rem 0; /* Relleno reducido para los elementos de la lista */
+    border-bottom: 1px dashed #e9ecef;
+    display: flex; /* Usa flexbox para un diseño horizontal */
+    align-items: baseline; /* Alinea las líneas de base del texto */
+    word-break: break-word;
+}
+
+.client-info-list li:last-child {
+    border-bottom: none;
+}
+
+.client-info-list strong {
+    color: #343a40;
+    flex-shrink: 0; /* Evita que la etiqueta se encoja */
+    margin-right: 0.25rem; /* Espacio muy pequeño entre la etiqueta y el valor */
+    white-space: nowrap; /* Mantiene el texto de la etiqueta en una sola línea */
+    text-align: left; /* Alinea las etiquetas a la izquierda */
+}
+
+.client-info-list span { /* Span para envolver los datos reales */
+    flex-grow: 1; /* Permite que los datos ocupen el espacio restante */
+    text-align: left; /* Asegura que los datos se alineen a la izquierda */
+}
+
+/* Edit Client Form Styles - Si tienes un formulario de edición, aplica los mismos principios */
+/* ... (tus estilos para .edit-client-form y sus elementos) ... */
+
+/* Separator Line */
+.separator-line {
+    border-top: 1px solid #dee2e6;
+    margin-top: 1.8rem; /* Margen reducido */
+    margin-bottom: 1.8rem; /* Margen reducido */
+    opacity: 0.8;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 767.98px) {
+    .client-edit-section {
+        padding: 1rem 0.5rem; /* Ajuste de padding para pantallas más pequeñas */
+    }
+
+    .client-info-card .card-body,
+    .client-edit-card .card-body {
+        padding: 1rem;
+    }
+
+    .client-info-card .card-header,
+    .client-edit-card .card-header {
+        font-size: 1.1rem; /* Tamaño de fuente del título ajustado para pantallas más pequeñas */
+        padding: 0.5rem 0.8rem;
+    }
+
+    .client-info-list strong {
+        white-space: normal; /* Permite que las etiquetas se ajusten en pantallas pequeñas si es necesario */
+    }
+}
+
+@media (max-width: 575.98px) {
+    .client-info-card .card-body,
+    .client-edit-card .card-body {
+        padding: 0.8rem;
+    }
+
+    .client-info-card .card-header,
+    .client-edit-card .card-header {
+        font-size: 1rem; /* Tamaño de fuente del título ajustado para pantallas extra pequeñas */
+    }
+
+    .client-info-list li {
+        flex-direction: column; /* Apila la etiqueta y el valor verticalmente en pantallas muy pequeñas */
+        align-items: flex-start;
+    }
+
+    .client-info-list li strong {
+        margin-bottom: 0.1rem;
+        white-space: nowrap; /* Asegura que la etiqueta no se rompa al apilarse */
+        margin-right: 0.5rem; /* Vuelve a añadir un poco de margen cuando se apila */
+    }
+
+    .client-info-list span {
+        text-align: left; /* Asegura que los datos sigan alineados a la izquierda cuando se apilan */
+        width: 100%; /* Hace que el span ocupe todo el ancho cuando se apila */
+    }
+
+    .edit-client-form .form-control,
+    .edit-client-form .form-select,
+    .edit-client-form .btn {
+        font-size: 0.8rem; /* Texto aún más pequeño para entradas y botones en pantallas extra pequeñas */
+        padding: 0.4rem 0.6rem;
+    }
+
+    .edit-client-form .form-label {
+        font-size: 0.85rem;
+    }
+
+
+
+
+
+/* son modificaciones adicionales sisirve si no quitarlas */
+
+
+
+}
+
+
+/* Estilo de los botones */
+/* Ajusta esta sección para que los botones tomen el ancho completo de su contenedor */
+.d-grid .btn,
+.d-md-block .btn { /* Aplica a botones dentro de contenedores d-grid o d-md-block */
+    width: 100%; /* Hace que los botones ocupen todo el ancho disponible */
+    padding: 0.75rem 1.25rem; /* Ajusta el relleno para un tamaño consistente */
+    font-size: 1rem; /* Ajusta el tamaño de la fuente para un tamaño consistente */
+    border-radius: 0.3rem;
+    box-sizing: border-box; /* Asegura que el padding no aumente el ancho total */
+}
+
+/* Colores de los botones */
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+.client-cancel-btn {
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+    color: white !important;
+}
+
+.client-cancel-btn:hover {
+    background-color: #c82333 !important;
+    border-color: #bd2130 !important;
+}
+
+#clientFormContainer {
+    max-width: 700px; /* Ajusta según sea necesario */
+    margin: 30px auto;
+    padding: 30px;
+    background-color: #fff; /* Este es el fondo blanco */
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); /* Esta es la sombra */
+}
+
+
+#clientFormContainer {
+    max-width: 700px;
+    margin: 30px auto;
+    padding: 30px;
+    background-color: transparent; /* Hace el fondo transparente */
+    /* Mantener box-shadow para que solo se vea la sombra */
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.client-edit-title {
+    white-space: normal !important; /* Permite que el texto se ajuste normalmente */
+    overflow: visible !important; /* Asegura que el contenido no esté oculto */
+    text-overflow: clip !important; /* Previene los puntos suspensivos */
+}
