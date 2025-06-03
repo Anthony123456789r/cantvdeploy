@@ -78,13 +78,13 @@ WSGI_APPLICATION = 'sistema_canTV.wsgi.app'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'er',
-        'USER': 'er_owner',
-        'PASSWORD': 'npg_14YxtGgfcdwq',
-        'HOST': 'ep-dark-hat-a8rraoyr-pooler.eastus2.azure.neon.tech',
-        'PORT': '5432',
+        'NAME': os.environ.get('DB_NAME', 'er'), # Lee de DB_NAME, si no existe usa 'er' como default local
+        'USER': os.environ.get('DB_USER', 'er_owner'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'npg_14YxtGgfcdwq'),
+        'HOST': os.environ.get('DB_HOST', 'ep-dark-hat-a8rraoyr-pooler.eastus2.azure.neon.tech'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
         'OPTIONS': {
-            'sslmode': 'require', # Añade esta línea
+            'sslmode': 'require',
         },
     },
      #'second_db': {
