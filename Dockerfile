@@ -40,7 +40,9 @@ RUN adduser --system --group appuser
 RUN mkdir -p /home/appuser/.cache/pip \
     && mkdir -p /app/tmp \
     && chown -R appuser:appuser /home/appuser/.cache \
-    && chown -R appuser:appuser /app/tmp
+    && chown -R appuser:appuser /app/tmp \
+    && chown -R appuser:appuser /tmp \
+    && chown -R appuser:appuser /var/tmp
 
 # Copia el archivo requirements.txt primero para aprovechar el caché de Docker.
 # Asegúrate de que 'requirements.txt' esté en la raíz de tu proyecto y no contenga 'pywin32'.
