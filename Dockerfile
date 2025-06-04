@@ -1,10 +1,10 @@
 # Usa una imagen base de Python. 'slim-bookworm' es una buena opción porque es más pequeña.
 FROM python:3.11-slim-bookworm
 
-# Instala espeak y un conjunto más completo de dependencias de OpenCV y audio.
+# Instala un conjunto más completo de dependencias de OpenCV y otras utilidades.
+# Elimina 'espeak' y 'alsa-utils' que causan problemas de audio en entornos sin tarjeta de sonido.
 # Instala también python3-pip directamente en el sistema como root.
 RUN apt-get update && apt-get install -y \
-    espeak \
     build-essential \
     libgl1-mesa-glx \
     libsm6 \
@@ -18,7 +18,6 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libtiff-dev \
     libglib2.0-0 \
-    alsa-utils \
     git \
     python3-pip \
     && rm -rf /var/lib/apt/lists/*
@@ -29,8 +28,7 @@ WORKDIR /app
 # Crea un usuario no-root.
 RUN adduser --system --group appuser
 
-# Crea el directorio home para appuser si no existe (adduser --system no siempre lo hace)
-# y asegúrate de que appuser tenga permisos sobre él.
+# Crea el directorio home para appuser si no existe y asegúrate de que appuser tenga permisos sobre él.
 # Esto es CRÍTICO para que --user funcione correctamente.
 RUN mkdir -p /home/appuser \
     && chown -R appuser:appuser /home/appuser
@@ -61,7 +59,6 @@ ENV TEMP=/app/tmp
 ENV TEMPDIR=/app/tmp
 ENV PYTHONUSERBASE=/home/appuser/.local
 
-# --- ¡NUEVO CAMBIO CRÍTICO AQUÍ! ---
 # Añadir el directorio de binarios de usuario al PATH.
 # Esto es esencial para que los ejecutables instalados con --user (como gunicorn) sean encontrados.
 ENV PATH="/home/appuser/.local/bin:$PATH"

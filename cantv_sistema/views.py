@@ -39,7 +39,7 @@ import pytz
 import qrcode
 from io import BytesIO
 #=============LIBRERIAS PARA EL BOT=============
-import pyttsx3
+#import pyttsx3
 import random
 import threading
 import cv2 
@@ -49,68 +49,68 @@ from PIL import Image
 #========================================================
 # Create your views here.
 #========FUNCION DE REPRODUCIR EL AUDIO DEL BOT========
-def reproducir_audio():
-    mensajes_bienvenida = [
-        "¡Hola! Soy Lia, tu asistente virtual. Bienvenido al sistema.",
-        "¡Hola! Soy Lia, tu asistente virtual. Bienvenida, por favor inicia sesión.",
-        "¡Hola! Soy Lia, tu asistente virtual. Estamos felices de verte aquí.",
-        "¡Hola! Soy Lia, tu asistente virtual. Estamos encantados de tenerte aquí en Canteve, la herramienta perfecta para crear contenido creativo.",
-        "¡Hola! Soy Lia, tu asistente virtual. Bienvenido a Canteve, donde la magia de la creación se convierte en una poderosa herramienta en tus manos.",
-        "¡Hola! Soy Lia, tu asistente virtual. En Canteve, la herramienta que hará brillar tu creatividad, te damos la bienvenida con los brazos abiertos."
-    ]
-    mensaje = random.choice(mensajes_bienvenida)
-    iniciar1 = pyttsx3.init()
-    voices = iniciar1.getProperty("voices")
-    velocidad = 150
-    iniciar1.setProperty("voice", voices[0].id)
-    iniciar1.setProperty("rate", velocidad)
-    iniciar1.say(mensaje)
-    iniciar1.runAndWait()
+#def reproducir_audio():
+    #mensajes_bienvenida = [
+     #   "¡Hola! Soy Lia, tu asistente virtual. Bienvenido al sistema.",
+      #  "¡Hola! Soy Lia, tu asistente virtual. Bienvenida, por favor inicia sesión.",
+      #  "¡Hola! Soy Lia, tu asistente virtual. Estamos felices de verte aquí.",
+      #  "¡Hola! Soy Lia, tu asistente virtual. Estamos encantados de tenerte aquí en Canteve, la herramienta perfecta para crear contenido creativo.",
+      #  "¡Hola! Soy Lia, tu asistente virtual. Bienvenido a Canteve, donde la magia de la creación se convierte en una poderosa herramienta en tus manos.",
+      #  "¡Hola! Soy Lia, tu asistente virtual. En Canteve, la herramienta que hará brillar tu creatividad, te damos la bienvenida con los brazos abiertos."
+    #]
+    #mensaje = random.choice(mensajes_bienvenida)
+    #iniciar1 = pyttsx3.init()
+    #voices = iniciar1.getProperty("voices")
+    #velocidad = 150
+    #iniciar1.setProperty("voice", voices[0].id)
+    #iniciar1.setProperty("rate", velocidad)
+    #iniciar1.say(mensaje)
+    #iniciar1.runAndWait()
 
-def reproducir_audio_gestion_tecnico():
-    mensajes_bienvenida = "Para dejar el reporte gestionado solo deberas llenar el formulario y estara listo"
-    mensaje = random.choice(mensajes_bienvenida)
-    iniciar1 = pyttsx3.init()
-    voices = iniciar1.getProperty("voices")
-    velocidad = 150
-    iniciar1.setProperty("voice", voices[0].id)
-    iniciar1.setProperty("rate", velocidad)
-    iniciar1.say(mensaje)
-    iniciar1.runAndWait()
+#def reproducir_audio_gestion_tecnico():
+  #  mensajes_bienvenida = "Para dejar el reporte gestionado solo deberas llenar el formulario y estara listo"
+   # mensaje = random.choice(mensajes_bienvenida)
+   # iniciar1 = pyttsx3.init()
+   # voices = iniciar1.getProperty("voices")
+   # velocidad = 150
+   # iniciar1.setProperty("voice", voices[0].id)
+   # iniciar1.setProperty("rate", velocidad)
+   # iniciar1.say(mensaje)
+   # iniciar1.runAndWait()
 
-def reproducir_audio_registro():
-    mensajes_registro = [
-        "¡Hola! Soy Lia, tu asistente virtual. Completa el formulario para unirte a nuestro equipo.",
-        "¡Hola! Soy Lia, tu asistente virtual. Regístrate y forma parte de nuestro talentoso equipo de trabajo.",
-        "¡Hola! Soy Lia, tu asistente virtual. ¡Únete a nosotros! Completa el formulario de registro para empezar.",
-        "¡Hola! Soy Lia, tu asistente virtual. Queremos conocerte. Rellena el formulario y comienza una nueva etapa laboral.",
-        "¡Hola! Soy Lia, tu asistente virtual. Inicia tu proceso de registro y descubre las oportunidades que tenemos para ti."
-    ]
-    mensaje = random.choice(mensajes_registro)
-    iniciar3 = pyttsx3.init()
-    voices = iniciar3.getProperty("voices")
-    velocidad = 150
-    iniciar3.setProperty("voice", voices[0].id)
-    iniciar3.setProperty("rate", velocidad)
-    iniciar3.say(mensaje)
-    iniciar3.runAndWait()
+#def reproducir_audio_registro():
+   # mensajes_registro = [
+    #    "¡Hola! Soy Lia, tu asistente virtual. Completa el formulario para unirte a nuestro equipo.",
+     #   "¡Hola! Soy Lia, tu asistente virtual. Regístrate y forma parte de nuestro talentoso equipo de trabajo.",
+      #  "¡Hola! Soy Lia, tu asistente virtual. ¡Únete a nosotros! Completa el formulario de registro para empezar.",
+       # "¡Hola! Soy Lia, tu asistente virtual. Queremos conocerte. Rellena el formulario y comienza una nueva etapa laboral.",
+        #"¡Hola! Soy Lia, tu asistente virtual. Inicia tu proceso de registro y descubre las oportunidades que tenemos para ti."
+   # ]
+   # mensaje = random.choice(mensajes_registro)
+   # iniciar3 = pyttsx3.init()
+    #voices = iniciar3.getProperty("voices")
+    #velocidad = 150
+    #iniciar3.setProperty("voice", voices[0].id)
+    #iniciar3.setProperty("rate", velocidad)
+    #iniciar3.say(mensaje)
+    #iniciar3.runAndWait()
 
-def reproducir_audio_cliente():
-    mensajes_bienvenida = [
-        "¡Hola! Soy Lía, tu asistente virtual. ¡Bienvenido a nuestro sitio! Esperamos que disfrutes de tu experiencia aquí.",
-        "¡Hola! Soy Lía, tu asistente virtual. Nos complace tenerte como nuestro cliente. Estamos aquí para ayudarte en lo que necesites.",
-        "¡Hola! Soy Lía, tu asistente virtual. Bienvenido a nuestra plataforma. Estamos emocionados de ser parte de tu viaje.",
-        "¡Hola! Soy Lía, tu asistente virtual. Gracias por elegirnos como tu proveedor de servicios. ¡Bienvenido a bordo!",
-        "¡Hola! Soy Lía, tu asistente virtual. Te damos la bienvenida a nuestra comunidad. Esperamos brindarte un excelente servicio."
-    ]
-    mensaje = random.choice(mensajes_bienvenida)
-    iniciar3 = pyttsx3.init()
-    voices = iniciar3.getProperty("voices")
-    velocidad = 150
-    iniciar3.setProperty("voice", voices[0].id)
-    iniciar3.setProperty("rate", velocidad)
-    iniciar3.say(mensaje)
-    iniciar3.runAndWait()
+#def reproducir_audio_cliente():
+   # mensajes_bienvenida = [
+        #"¡Hola! Soy Lía, tu asistente virtual. ¡Bienvenido a nuestro sitio! Esperamos que disfrutes de tu experiencia aquí.",
+       # "¡Hola! Soy Lía, tu asistente virtual. Nos complace tenerte como nuestro cliente. Estamos aquí para ayudarte en lo que necesites.",
+      #  "¡Hola! Soy Lía, tu asistente virtual. Bienvenido a nuestra plataforma. Estamos emocionados de ser parte de tu viaje.",
+     #   "¡Hola! Soy Lía, tu asistente virtual. Gracias por elegirnos como tu proveedor de servicios. ¡Bienvenido a bordo!",
+    #    "¡Hola! Soy Lía, tu asistente virtual. Te damos la bienvenida a nuestra comunidad. Esperamos brindarte un excelente servicio."
+   # ]
+    #mensaje = random.choice(mensajes_bienvenida)
+    #iniciar3 = pyttsx3.init()
+    #voices = iniciar3.getProperty("voices")
+    #velocidad = 150
+   # iniciar3.setProperty("voice", voices[0].id)
+  #  iniciar3.setProperty("rate", velocidad)
+  #  iniciar3.say(mensaje)
+ #   iniciar3.runAndWait()
 #========PAGINAS PRINCIPALES DEL SISTEMA========
 def seleccion_login(request):
     if request.method == 'POST':
@@ -119,8 +119,8 @@ def seleccion_login(request):
             return redirect("loginUser")
         elif seleccion == 'sistema':
             return redirect("loginSistema")
-    audio_thread = threading.Thread(target=reproducir_audio)
-    audio_thread.start()
+    #audio_thread = threading.Thread(target=reproducir_audio)
+    #audio_thread.start()
     return render(request,"paginas_principales/login_seleccion.html")
 
 #================================================
@@ -197,8 +197,8 @@ def registro(request):
                 "mensaje": "todos los campos son obligatorios"
                 })
      else:
-        audio_thread = threading.Thread(target=reproducir_audio_registro)
-        audio_thread.start()
+        #audio_thread = threading.Thread(target=reproducir_audio_registro)
+        #audio_thread.start()
         return render(request, 'paginas_principales/registro.html')
     #========VALIDACIONES DEL LOGIN==============
 def identidad_user(request):
@@ -329,8 +329,8 @@ def login_user(request):
                 "mensaje": "Usuario no existe/código inválido"
                 })
     else:
-        audio_thread = threading.Thread(target=reproducir_audio_cliente)
-        audio_thread.start()
+        #audio_thread = threading.Thread(target=reproducir_audio_cliente)
+        #audio_thread.start()
         return render(request, 'paginas_principales/login_user.html')
 
     
