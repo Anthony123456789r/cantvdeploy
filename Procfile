@@ -1,1 +1,1 @@
-web: gunicorn sistema_canTV.wsgi:application
+web: gunicorn sistema_canTV.wsgi:app
