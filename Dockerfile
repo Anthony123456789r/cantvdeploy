@@ -35,6 +35,10 @@ WORKDIR /app
 # Esto mejora la seguridad al no ejecutar la aplicación como root.
 RUN adduser --system --group appuser
 
+# Cambia la propiedad del directorio de trabajo al usuario no-root.
+# Esto es crucial para que el usuario pueda escribir en /app y sus subdirectorios.
+RUN chown -R appuser:appuser /app
+
 # Crea directorios para el caché de pip y temporales, y asegúrate de que appuser tenga permisos.
 # Esto resuelve el error "Permission denied" al instalar paquetes.
 RUN mkdir -p /home/appuser/.cache/pip \
@@ -44,8 +48,7 @@ RUN mkdir -p /home/appuser/.cache/pip \
     && chown -R appuser:appuser /tmp \
     && chown -R appuser:appuser /var/tmp
 
-# Copia el archivo requirements.txt primero para aprovechar el caché de Docker.
-# Asegúrate de que 'requirements.txt' esté en la raíz de tu proyecto y no contenga 'pywin32'.
+# Copia el archivo requirements.txt. Ahora /app es propiedad de appuser.
 COPY requirements.txt /app/
 
 # Cambia al usuario no-root para instalar las dependencias de Python.
@@ -58,7 +61,7 @@ ENV TMPDIR=/app/tmp
 RUN pip install -r requirements.txt
 
 # Vuelve a root temporalmente para copiar el resto del código.
-# Es necesario volver a root para copiar archivos si el usuario no-root no tiene permisos en la raíz del contexto de build.
+# Esto es necesario si hay archivos en tu contexto de build que root creó y appuser no puede leer/escribir directamente.
 USER root
 COPY . /app/
 
