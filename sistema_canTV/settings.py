@@ -70,7 +70,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'sistema_canTV.wsgi.app'
+WSGI_APPLICATION = 'sistema_canTV.wsgi.application'
 
 # --- Configuración de la Base de Datos ---
 # Usa dj_database_url para analizar la variable de entorno DATABASE_URL de Render
