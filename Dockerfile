@@ -50,4 +50,4 @@ EXPOSE 8000
 # Comando para iniciar tu aplicación con Gunicorn.
 # 'sistema_canTV' es el nombre de la carpeta de tu proyecto Django
 # (la que contiene settings.py y wsgi.py).
-CMD ["gunicorn", "sistema_canTV.wsgi:application", "--bind", "0.0.0.0:$PORT"]
+CMD gunicorn sistema_canTV.wsgi:application --bind 0.0.0.0:$PORT
