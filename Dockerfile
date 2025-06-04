@@ -35,6 +35,11 @@ WORKDIR /app
 # Esto mejora la seguridad al no ejecutar la aplicación como root.
 RUN adduser --system --group appuser
 
+# Crea un directorio para el caché de pip y asegúrate de que appuser tenga permisos.
+# Esto resuelve el error "Permission denied" al instalar paquetes.
+RUN mkdir -p /home/appuser/.cache/pip \
+    && chown -R appuser:appuser /home/appuser/.cache
+
 # Copia el archivo requirements.txt primero para aprovechar el caché de Docker.
 COPY requirements.txt /app/
 
@@ -42,6 +47,8 @@ COPY requirements.txt /app/
 USER appuser
 
 # Instala las dependencias de Python usando pip.
+# Establece la variable de entorno PIP_CACHE_DIR para que pip use el directorio que creamos.
+ENV PIP_CACHE_DIR=/home/appuser/.cache/pip
 RUN pip install -r requirements.txt
 
 # Vuelve a root temporalmente para copiar el resto del código
@@ -49,12 +56,14 @@ USER root
 COPY . /app/
 
 # Cambia la propiedad de los archivos copiados al usuario no-root.
+# Esto es esencial para que appuser pueda leer y escribir los archivos de la aplicación.
 RUN chown -R appuser:appuser /app
 
 # Vuelve al usuario no-root para ejecutar los comandos de Django y la aplicación.
 USER appuser
 
 # Recopila archivos estáticos y ejecuta migraciones.
+# Esto se hace durante la construcción de la imagen para preparar la aplicación.
 RUN python manage.py collectstatic --noinput
 RUN python manage.py migrate
 
