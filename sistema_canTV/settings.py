@@ -11,28 +11,35 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 import os
 from pathlib import Path
-import dj_database_url # Importar para el análisis robusto de la URL de la base de datos
+import dj_database_url
 
 # Construye rutas dentro del proyecto así: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # --- Configuración General ---
+
 # ¡ADVERTENCIA DE SEGURIDAD: mantén la clave secreta utilizada en producción en secreto!
-# Usa una variable de entorno para la clave secreta en producción
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-i&tbyp58m=g!__x5a*eiori9dkw-3hm2-vk2_$carukl4xbbhj') # Valor de respaldo para desarrollo local
+# Usa una variable de entorno para la clave secreta en producción.
+# El valor de respaldo es SOLO para desarrollo local si la variable de entorno no está configurada.
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-i&tbyp58m=g!__x5a*eiori9dkw-3hm2-vk2_$carukl4xbbhj')
 
-# ¡ADVERTENCIA DE SEGURIDAD: no ejecutes con debug activado en producción!
-# DEBUG debe ser False en producción
-DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True' 
+# ¡ADVERTENCIA DE SEGURIDAD: no ejecutes con DEBUG activado en producción!
+# DEBUG debe ser False en producción para evitar fugas de información sensible.
+# 'True' es el valor por defecto si DJANGO_DEBUG no está en las variables de entorno.
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
-# --- CORRECCIÓN AQUÍ: ALLOWED_HOSTS para Render ---
-# Permite el dominio de Render y sus subdominios.
-# Es crucial que esta variable de entorno 'ALLOWED_HOSTS' esté configurada en Render.
-# Si no está configurada, usará el valor por defecto que incluye '.onrender.com'.
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '.onrender.com,.vercel.app,localhost,127.0.0.1').split(',')
-# Nota: '.onrender.com' permite cualquier subdominio de onrender.com.
-# Si solo quieres un dominio específico, usa 'cantvdeploy-1.onrender.com' directamente.
-# La opción con os.environ.get es la más flexible para producción.
+# --- ALLOWED_HOSTS para Render ---
+# Render establece la variable de entorno 'RENDER_EXTERNAL_HOSTNAME' automáticamente.
+# Si estás usando un dominio personalizado en Render, DEBES añadirlo aquí o en la variable de entorno ALLOWED_HOSTS en Render.
+RENDER_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+
+if RENDER_HOSTNAME:
+    ALLOWED_HOSTS = [RENDER_HOSTNAME, 'localhost', '127.0.0.1']
+else:
+    # Este fallback es útil si no se detecta RENDER_EXTERNAL_HOSTNAME.
+    # '.onrender.com' permite cualquier subdominio de onrender.com.
+    # La variable de entorno 'ALLOWED_HOSTS' en Render puede anular esto si se setea.
+    ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '.onrender.com,localhost,127.0.0.1').split(',')
 
 
 # Definición de la aplicación
@@ -55,7 +62,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'cantv_sistema.middleware.AuthRequiredMiddleware',
+    # 'cantv_sistema.middleware.AuthRequiredMiddleware', # Comenta o descomenta según tus pruebas
 ]
 
 ROOT_URLCONF = 'sistema_canTV.urls'
@@ -79,12 +86,13 @@ TEMPLATES = [
 WSGI_APPLICATION = 'sistema_canTV.wsgi.application'
 
 # --- Configuración de la Base de Datos ---
-# Usa dj_database_url para analizar la variable de entorno DATABASE_URL de Render
+# Usa dj_database_url para analizar la variable de entorno DATABASE_URL de Render.
+# EL VALOR DE RESPALDO (DEFAULT) DEBE COINCIDIR EXACTAMENTE CON LA URL DE NEON CORRECTA.
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL', 'postgres://er_owner:npg_14YxtGgfcdwq@ep-dark-hat-a8rraoyr-pooler.eastus2.azure.neon.tech/er'),
+        default=os.environ.get('DATABASE_URL', 'postgresql://er_owner:npg_14YxtGgfcdwq@ep-holy-pond-a8vw466q-pooler.eastus2.azure.neon.tech/er?sslmode=require'),
         conn_max_age=600, # Opcional: controla cuánto tiempo se almacenan en caché las conexiones
-        ssl_require=True # Asegura que SSL sea requerido para producción
+        ssl_require=True # Asegura que SSL sea requerido para producción (importante para Neon)
     )
 }
 
