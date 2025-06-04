@@ -26,6 +26,7 @@ RUN apt-get update && apt-get install -y \
     libtiff-dev \
     libglib2.0-0 \
     alsa-utils \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
 # Establece el directorio de trabajo dentro del contenedor.
@@ -35,58 +36,57 @@ WORKDIR /app
 # Esto mejora la seguridad al no ejecutar la aplicación como root.
 RUN adduser --system --group appuser
 
-# Cambia la propiedad del directorio de trabajo al usuario no-root.
-# Esto es crucial para que el usuario pueda escribir en /app y sus subdirectorios.
-RUN chown -R appuser:appuser /app
-
 # Crea directorios para el caché de pip y temporales, y asegúrate de que appuser tenga permisos.
-# La clave aquí es asegurar que /tmp y /var/tmp también sean propiedad de appuser,
-# ya que algunos paquetes pueden usarlos independientemente de TMPDIR.
+# !!! CRÍTICO: Asegura que /tmp y /var/tmp existan y sean accesibles para appuser ANTES de cambiar a appuser
 RUN mkdir -p /home/appuser/.cache/pip \
     && mkdir -p /app/tmp \
+    && mkdir -p /tmp \
+    && mkdir -p /var/tmp \
     && chown -R appuser:appuser /home/appuser/.cache \
     && chown -R appuser:appuser /app/tmp \
     && chown -R appuser:appuser /tmp \
-    && chown -R appuser:appuser /var/tmp
+    && chown -R appuser:appuser /var/tmp \
+    && chown -R appuser:appuser /app # Otorga a appuser la propiedad de /app *después* de crearlo
 
-# Copia el archivo requirements.txt. Ahora /app es propiedad de appuser.
+# Copia el archivo requirements.txt.
 COPY requirements.txt /app/
 
 # Cambia al usuario no-root para instalar las dependencias de Python.
 USER appuser
 
-# Instala las dependencias de Python usando pip.
 # Establece las variables de entorno PIP_CACHE_DIR y TMPDIR para que pip use directorios que el usuario posee.
 # También establece TEMP y TEMPDIR para mayor compatibilidad.
 ENV PIP_CACHE_DIR=/home/appuser/.cache/pip
 ENV TMPDIR=/app/tmp
 ENV TEMP=/app/tmp
 ENV TEMPDIR=/app/tmp
+
+# --- INTENTO 1: Actualizar pip y luego instalar requirements ---
+# Esto es lo primero que probaremos.
+RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
+# --- INTENTO 2 (Alternativa si INTENTO 1 falla): Instalar requirements sin caché ---
+# Descomentar la siguiente línea si el intento 1 falla y el problema persiste con '/nonexistent'
+# y comentar la línea "RUN pip install -r requirements.txt" de arriba.
+# RUN pip install --no-cache-dir -r requirements.txt
+
 # Vuelve a root temporalmente para copiar el resto del código.
-# Esto es necesario si hay archivos en tu contexto de build que root creó y appuser no puede leer/escribir directamente.
 USER root
 COPY . /app/
 
 # Cambia la propiedad de los archivos copiados al usuario no-root.
-# Esto es esencial para que appuser pueda leer y escribir los archivos de la aplicación.
 RUN chown -R appuser:appuser /app
 
 # Vuelve al usuario no-root para ejecutar los comandos de Django y la aplicación.
 USER appuser
 
 # Recopila archivos estáticos y ejecuta migraciones.
-# Esto se hace durante la construcción de la imagen para preparar la aplicación.
 RUN python manage.py collectstatic --noinput
 RUN python manage.py migrate
 
 # Expone el puerto en el que Gunicorn va a escuchar.
-# Render usará esta información para dirigir el tráfico.
 EXPOSE 8000
 
 # Comando para iniciar tu aplicación con Gunicorn.
-# 'sistema_canTV' es el nombre de la carpeta de tu proyecto Django
-# (la que contiene settings.py y wsgi.py).
-# Usamos la "shell form" para que la variable $PORT sea expandida correctamente por Render.
 CMD gunicorn sistema_canTV.wsgi:application --bind 0.0.0.0:$PORT
