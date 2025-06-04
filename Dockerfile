@@ -61,6 +61,11 @@ ENV TEMP=/app/tmp
 ENV TEMPDIR=/app/tmp
 ENV PYTHONUSERBASE=/home/appuser/.local
 
+# --- ¡NUEVO CAMBIO CRÍTICO AQUÍ! ---
+# Añadir el directorio de binarios de usuario al PATH.
+# Esto es esencial para que los ejecutables instalados con --user (como gunicorn) sean encontrados.
+ENV PATH="/home/appuser/.local/bin:$PATH"
+
 # Limpia la caché de pip (si existe de un intento anterior) antes de instalar.
 RUN rm -rf $PIP_CACHE_DIR/*
 
