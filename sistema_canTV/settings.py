@@ -25,9 +25,11 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-i&tbyp58m=g!__x5a*eio
 # DEBUG debe ser False en producción
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True' 
 
-# Hosts permitidos para producción
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '.vercel.app,localhost,127.0.0.1').split(',')
-# Nota: Render añade automáticamente la URL de tu servicio a ALLOWED_HOSTS
+
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'cantvdeploy.onrender.com,.vercel.app,localhost,127.0.0.1').split(',')
+# O si prefieres un enfoque más amplio para Render subdominios:
+# ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '.onrender.com,.vercel.app,localhost,127.0.0.1').split(',')
+
 
 # Definición de la aplicación
 INSTALLED_APPS = [
