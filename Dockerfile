@@ -7,6 +7,7 @@ FROM python:3.11-slim-bookworm
 # 'libsm6', 'libxext6', 'libxrender1', 'libfontconfig1', 'libice6' son librerías X11/gráficas comunes.
 # 'libatlas-base-dev' es para optimizaciones numéricas, a menudo usadas por NumPy/SciPy (que OpenCV usa).
 # 'libhdf5-dev', 'libjpeg-dev', 'libpng-dev', 'libtiff-dev' son para soporte de formatos de imagen.
+# 'libglib2.0-0' es para libgthread-2.0.so.0 y otras dependencias de GLib.
 # Limpia el caché de apt-get para reducir el tamaño de la imagen.
 RUN apt-get update && apt-get install -y \
     espeak \
@@ -22,6 +23,7 @@ RUN apt-get update && apt-get install -y \
     libjpeg-dev \
     libpng-dev \
     libtiff-dev \
+    libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
 # Establece el directorio de trabajo dentro del contenedor.
