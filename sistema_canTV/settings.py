@@ -11,25 +11,25 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 import os
 from pathlib import Path
+import dj_database_url # Importar para el análisis robusto de la URL de la base de datos
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# Construye rutas dentro del proyecto así: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# --- Configuración General ---
+# ¡ADVERTENCIA DE SEGURIDAD: mantén la clave secreta utilizada en producción en secreto!
+# Usa una variable de entorno para la clave secreta en producción
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-i&tbyp58m=g!__x5a*eiori9dkw-3hm2-vk2_$carukl4xbbhj') # Valor de respaldo para desarrollo local
+
+# ¡ADVERTENCIA DE SEGURIDAD: no ejecutes con debug activado en producción!
+# DEBUG debe ser False en producción
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True' 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
+# Hosts permitidos para producción
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '.vercel.app,localhost,127.0.0.1').split(',')
+# Nota: Render añade automáticamente la URL de tu servicio a ALLOWED_HOSTS
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-i&tbyp58m=g!__x5a*eiori9dkw-3hm2-vk3_$carukl4xbbhj'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = ['.vercel.app', 'localhost', '127.0.0.1']
-
-
-# Application definition
-
+# Definición de la aplicación
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -37,11 +37,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'cantv_sistema', 
+    'cantv_sistema',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', # Añadir WhiteNoise para servir archivos estáticos
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -71,36 +72,17 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'sistema_canTV.wsgi.app'
 
-
-# Database
-# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
+# --- Configuración de la Base de Datos ---
+# Usa dj_database_url para analizar la variable de entorno DATABASE_URL de Render
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME', 'er'), # Lee de DB_NAME, si no existe usa 'er' como default local
-        'USER': os.environ.get('DB_USER', 'er_owner'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', 'npg_14YxtGgfcdwq'),
-        'HOST': os.environ.get('DB_HOST', 'ep-dark-hat-a8rraoyr-pooler.eastus2.azure.neon.tech'),
-        'PORT': os.environ.get('DB_PORT', '5432'),
-        'OPTIONS': {
-            'sslmode': 'require',
-        },
-    },
-     #'second_db': {
-        #'ENGINE': 'django.db.backends.postgresql',
-        #'NAME': 'tecnicos_exterior',
-        #'USER': 'postgres',
-        #'PASSWORD': 'admin',
-        #'HOST': 'localhost',
-        #'PORT': '5432',
-    #}
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL', 'postgres://er_owner:npg_14YxtGgfcdwq@ep-dark-hat-a8rraoyr-pooler.eastus2.azure.neon.tech/er'),
+        conn_max_age=600, # Opcional: controla cuánto tiempo se almacenan en caché las conexiones
+        ssl_require=True # Asegura que SSL sea requerido para producción
+    )
 }
 
-
-# Password validation
-# https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
-
+# --- Validación de Contraseñas ---
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -116,28 +98,29 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/4.1/topics/i18n/
-
+# --- Internacionalización ---
 LANGUAGE_CODE = 'es-latam'
-
 TIME_ZONE = 'America/Caracas'
-
 USE_I18N = True
-
 USE_TZ = True
 
+# --- Archivos Estáticos y de Medios ---
+# Recoge los archivos estáticos en un solo directorio para producción
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_URL = '/static/' # Cambiado por consistencia, será servido por WhiteNoise
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.1/howto/static-files/
+# Directorios adicionales donde Django debe buscar archivos estáticos
+STATICFILES_DIRS = [
+    BASE_DIR / 'cantv_sistema' / 'static',
+]
 
-STATIC_URL = '/cantv_sistema/static/'
+# Configura WhiteNoise para comprimir y cachear archivos estáticos
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = '/media/'
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
-
+# Tipo de campo de clave primaria por defecto
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LANGUAGES = [
@@ -145,11 +128,3 @@ LANGUAGES = [
     ('es', 'Español'),
     ('es-latam', 'Español (Latinoamérica)'),
 ]
-
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_DIRS = [
-    BASE_DIR / 'cantv_sistema' / 'static',
-]
-MEDIA_ROOT = BASE_DIR / 'media'
-MEDIA_URL = '/media/'
-
