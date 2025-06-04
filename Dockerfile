@@ -40,7 +40,8 @@ RUN adduser --system --group appuser
 RUN chown -R appuser:appuser /app
 
 # Crea directorios para el caché de pip y temporales, y asegúrate de que appuser tenga permisos.
-# Esto resuelve el error "Permission denied" al instalar paquetes.
+# La clave aquí es asegurar que /tmp y /var/tmp también sean propiedad de appuser,
+# ya que algunos paquetes pueden usarlos independientemente de TMPDIR.
 RUN mkdir -p /home/appuser/.cache/pip \
     && mkdir -p /app/tmp \
     && chown -R appuser:appuser /home/appuser/.cache \
@@ -56,8 +57,11 @@ USER appuser
 
 # Instala las dependencias de Python usando pip.
 # Establece las variables de entorno PIP_CACHE_DIR y TMPDIR para que pip use directorios que el usuario posee.
+# También establece TEMP y TEMPDIR para mayor compatibilidad.
 ENV PIP_CACHE_DIR=/home/appuser/.cache/pip
 ENV TMPDIR=/app/tmp
+ENV TEMP=/app/tmp
+ENV TEMPDIR=/app/tmp
 RUN pip install -r requirements.txt
 
 # Vuelve a root temporalmente para copiar el resto del código.
