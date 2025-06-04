@@ -27,17 +27,19 @@ RUN apt-get update && apt-get install -y \
     libglib2.0-0 \
     alsa-utils \
     git \
+    # Instala o actualiza python3-pip directamente en el sistema como root,
+    # para que el pip base esté en un estado conocido y funcional.
+    python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
 # Establece el directorio de trabajo dentro del contenedor.
 WORKDIR /app
 
 # Crea un usuario no-root.
-# Esto mejora la seguridad al no ejecutar la aplicación como root.
 RUN adduser --system --group appuser
 
 # Crea directorios para el caché de pip y temporales, y asegúrate de que appuser tenga permisos.
-# !!! CRÍTICO: Asegura que /tmp y /var/tmp existan y sean accesibles para appuser ANTES de cambiar a appuser
+# Aseguramos que /tmp y /var/tmp sean propiedad de appuser explícitamente.
 RUN mkdir -p /home/appuser/.cache/pip \
     && mkdir -p /app/tmp \
     && mkdir -p /tmp \
@@ -46,7 +48,7 @@ RUN mkdir -p /home/appuser/.cache/pip \
     && chown -R appuser:appuser /app/tmp \
     && chown -R appuser:appuser /tmp \
     && chown -R appuser:appuser /var/tmp \
-    && chown -R appuser:appuser /app # Otorga a appuser la propiedad de /app *después* de crearlo
+    && chown -R appuser:appuser /app
 
 # Copia el archivo requirements.txt.
 COPY requirements.txt /app/
@@ -61,15 +63,30 @@ ENV TMPDIR=/app/tmp
 ENV TEMP=/app/tmp
 ENV TEMPDIR=/app/tmp
 
-# --- INTENTO 1: Actualizar pip y luego instalar requirements ---
-# Esto es lo primero que probaremos.
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+# *** LA CLAVE AQUÍ: Forzar las variables temporales directamente en el comando pip ***
+# También, usa --break-system-packages si es necesario (para evitar errores en ambientes Python del sistema)
+# Instalar pip y luego las dependencias.
 
-# --- INTENTO 2 (Alternativa si INTENTO 1 falla): Instalar requirements sin caché ---
-# Descomentar la siguiente línea si el intento 1 falla y el problema persiste con '/nonexistent'
-# y comentar la línea "RUN pip install -r requirements.txt" de arriba.
-# RUN pip install --no-cache-dir -r requirements.txt
+# Paso 1: Asegurarse de que pip esté actualizado para el usuario.
+# Usamos un comando completo que pasa las variables de entorno explícitamente.
+# Si sigue fallando, la causa es más profunda que solo permisos de /tmp.
+RUN TMPDIR=/app/tmp TEMP=/app/tmp TEMPDIR=/app/tmp \
+    PIP_CACHE_DIR=/home/appuser/.cache/pip \
+    python3 -m pip install --upgrade pip --user --no-warn-script-location \
+    || echo "Pip upgrade failed, but will proceed (likely due to base system pip issues)."
+
+# Paso 2: Instalar las dependencias de Python usando pip.
+# De nuevo, pasamos las variables de entorno explícitamente.
+RUN TMPDIR=/app/tmp TEMP=/app/tmp TEMPDIR=/app/tmp \
+    PIP_CACHE_DIR=/home/appuser/.cache/pip \
+    python3 -m pip install -r requirements.txt --user --no-warn-script-location
+
+# NOTA: Si el error persiste en el paso anterior,
+# podrías intentar descomentar la siguiente línea y comentar la anterior.
+# Esto deshabilitaría la caché de pip, que a veces es la fuente del problema.
+# RUN TMPDIR=/app/tmp TEMP=/app/tmp TEMPDIR=/app/tmp \
+#     python3 -m pip install --no-cache-dir -r requirements.txt --user --no-warn-script-location
+
 
 # Vuelve a root temporalmente para copiar el resto del código.
 USER root
@@ -89,4 +106,4 @@ RUN python manage.py migrate
 EXPOSE 8000
 
 # Comando para iniciar tu aplicación con Gunicorn.
-CMD gunicorn sistema_canTV.wsgi:application --bind 0.0.0.0:$PORT
+CMD gunicorn sistema_canTV.wsgi:application --bind 0.00.0.0:$PORT
