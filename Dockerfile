@@ -8,16 +8,12 @@ RUN apt-get update && apt-get install -y espeak && rm -rf /var/lib/apt/lists/*
 # Establece el directorio de trabajo dentro del contenedor.
 WORKDIR /app
 
-# Copia los archivos de configuración de Poetry primero para aprovechar el caché de Docker.
-# Esto es si estás usando Poetry para la gestión de dependencias.
-COPY pyproject.toml poetry.lock /app/
+# Copia el archivo requirements.txt primero para aprovechar el caché de Docker.
+# Esto es crucial para que Docker pueda instalar las dependencias.
+COPY requirements.txt /app/
 
-# Instala Poetry y luego las dependencias del proyecto.
-# poetry config virtualenvs.create false evita que Poetry cree un entorno virtual separado
-# dentro del contenedor, ya que ya estamos en uno.
-RUN pip install poetry
-RUN poetry config virtualenvs.create false
-RUN poetry install --no-root --no-dev
+# Instala las dependencias de Python usando pip.
+RUN pip install -r requirements.txt
 
 # Copia el resto de tu código de la aplicación.
 COPY . /app/
@@ -31,6 +27,6 @@ RUN python manage.py migrate
 EXPOSE 8000
 
 # Comando para iniciar tu aplicación con Gunicorn.
-# Asegúrate de reemplazar 'your_project_name' con el nombre real de tu proyecto Django
-# (el nombre de la carpeta que contiene settings.py y wsgi.py).
+# Asegúrate de que 'sistema_canTV' sea el nombre real de la carpeta de tu proyecto Django
+# (la que contiene settings.py y wsgi.py).
 CMD ["gunicorn", "sistema_canTV.wsgi:application", "--bind", "0.0.0.0:$PORT"]
