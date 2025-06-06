@@ -48,6 +48,7 @@ from skimage.metrics import structural_similarity as ssim
 from PIL import Image
 from django.conf import settings # Añade esta importación
 # from pathlib import Path # Si no la tienes ya importada
+from django.http import HttpResponseServerError
 #========================================================
 # Create your views here.
 #========FUNCION DE REPRODUCIR EL AUDIO DEL BOT========
@@ -1922,12 +1923,17 @@ def cliente_reporte(request):
             permisos_lista["permiso5"] = consultar_permiso5
     except Permiso.DoesNotExist:
         permisos_lista["permiso5"] = None
+    # CORRECCIÓN: asegúrate de que esto se usa de forma consistente si es necesario,
+    # el dict permisos_lista ya se estaba poblando arriba.
+    # Si esta reasignación es intencional, los nombres de clave "permiso2", "permiso3", "permiso4" no coinciden con los tries de arriba.
+    # Asegúrate de que los IDs 1, 3, 4, 5 de tipo_permiso se mapeen correctamente a estos nombres de clave.
     permisos_lista = {
-                "permiso1":consultar_permiso1,
-                "permiso2":consultar_permiso3,
-                "permiso3":consultar_permiso4,
-                "permiso4":consultar_permiso5,
-            }
+        "permiso1": consultar_permiso1,
+        "permiso3": consultar_permiso3, # Cambiado de "permiso2"
+        "permiso4": consultar_permiso4, # Cambiado de "permiso3"
+        "permiso5": consultar_permiso5, # Cambiado de "permiso4"
+    }
+
     #***********************************************************************
     try:
         compro_cli = cliente.objects.get(id=id_cli_sessi)
@@ -1939,21 +1945,33 @@ def cliente_reporte(request):
     # --- CAMBIO CLAVE AQUÍ ---
     # Usa la ruta definida en settings.py para construir la ruta al archivo Excel
     excel_file_name = 'fallas_de_cantv.xlsx'
-    # Combina el directorio base de Excel con el nombre del archivo.
-    # Necesitas haber definido EXCEL_FILES_DIR en tu settings.py como:
-    # EXCEL_FILES_DIR = BASE_DIR / 'cantv_sistema' / 'hojas_excel'
+    
+    # Construye la ruta al archivo Excel.
+    # `settings.BASE_DIR` apunta a la raíz de tu proyecto (donde está manage.py), que en Render es `/app`.
+    # Asumimos que tu archivo Excel está en `/app/cantv_sistema/hojas_excel/fallas_de_cantv.xlsx`
+    archivo_excel_path = os.path.join(settings.BASE_DIR, 'cantv_sistema', 'hojas_excel', excel_file_name)
+
     try:
-        archivo_excel = settings.EXCEL_FILES_DIR / excel_file_name
-        libro_excel = openpyxl.load_workbook(archivo_excel)
+        # Usamos Path() para asegurar que el método .exists() esté disponible si settings.BASE_DIR ya es un Path object.
+        # Si settings.BASE_DIR es una cadena (str), `os.path.join` devuelve una cadena.
+        # Para usar `.exists()`, es mejor convertir la cadena a un objeto Path.
+        #from pathlib import Path # Importar Path si no está ya
+        #archivo_excel = Path(archivo_excel_path) # Convertir a Path object para .exists()
+        
+        # O simplemente puedes usar os.path.exists si no quieres usar Path
+        if not os.path.exists(archivo_excel_path):
+            raise FileNotFoundError(f"El archivo Excel no se encontró en: {archivo_excel_path}")
+
+        libro_excel = openpyxl.load_workbook(archivo_excel_path) # Usamos la ruta construida
     except FileNotFoundError:
         # Manejo de error específico si el archivo no se encuentra en el servidor
-        print(f"Error: El archivo {archivo_excel} no se encontró. Asegúrate de que esté en el repositorio.")
-        return HttpResponseServerError("Error interno: No se pudo cargar el archivo de configuración de fallas.")
+        print(f"Error: El archivo {excel_file_name} no se encontró en la ruta esperada: {archivo_excel_path}. Asegúrate de que esté en el repositorio y la ruta sea correcta.")
+        return HttpResponseServerError("Error interno del servidor: No se pudo cargar el archivo de configuración de fallas (Excel). Contacte al administrador.")
     except Exception as e:
         # Manejo de cualquier otro error al cargar el Excel
         print(f"Error al cargar el archivo Excel: {e}")
         traceback.print_exc()
-        return HttpResponseServerError(f"Error interno al procesar el reporte: {e}")
+        return HttpResponseServerError(f"Error interno del servidor al procesar el reporte: {e}. Contacte al administrador.")
 
     hoja_excel = libro_excel['fallas de cantv']
     datos = []
@@ -1983,7 +2001,7 @@ def cliente_reporte(request):
                 'datos': datos,
                 'datos1': datos1,
                 'mensaje': 'Debe seleccionar una opción válida',
-                "permisos":permisos_lista, # Asegúrate de pasar permisos_lista en todas las respuestas
+                "permisos":permisos_lista,
                 'algo_mal': algo_mal
                 })
         elif dato1 == "Sin conexión a internet" and dato2 == "Indique la falla por desconexion de internet":
@@ -2170,16 +2188,17 @@ def cliente_reporte(request):
                 # ===========VALIDACION DE LA IMAGEN DE TESTEO DE VELOCIDAD DE INTERNET==========
                 valid_formats = ['jpg', 'jpeg', 'png']
 
-                # Verificar si la imagen cumple con los requisitos de formato y resolución
                 try:
-                    # La imagen de referencia debe estar en STATICFILES_DIRS o MEDIA_ROOT
-                    # o directamente en un path relativo a BASE_DIR
-                    # Asegúrate de que 'media/imagen_validacion_testeo.png' sea accesible en Render
-                    img_referencia_path = settings.MEDIA_ROOT / 'imagen_validacion_testeo.png' # Asumiendo que está en media
-                    if not img_referencia_path.exists():
+                    # Ruta a la imagen de referencia dentro del directorio MEDIA_ROOT en Render
+                    # Necesitas asegurarte de que esta imagen 'imagen_validacion_testeo.png'
+                    # esté en la carpeta 'media' de tu proyecto y que la estés subiendo a Git.
+                    # Render montará MEDIA_ROOT en /app/media/
+                    img_referencia_path = os.path.join(settings.MEDIA_ROOT, 'imagen_validacion_testeo.png')
+                    
+                    if not os.path.exists(img_referencia_path):
                         raise FileNotFoundError(f"Imagen de referencia no encontrada en: {img_referencia_path}")
 
-                    img_referencia = cv2.imread(str(img_referencia_path), 0)
+                    img_referencia = cv2.imread(img_referencia_path, 0)
                     if img_referencia is None:
                         raise ValueError(f"No se pudo cargar la imagen de referencia desde: {img_referencia_path}")
 
