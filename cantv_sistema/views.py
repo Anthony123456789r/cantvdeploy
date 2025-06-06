@@ -46,6 +46,8 @@ import cv2
 import numpy as np
 from skimage.metrics import structural_similarity as ssim
 from PIL import Image
+from django.conf import settings # Añade esta importación
+# from pathlib import Path # Si no la tienes ya importada
 #========================================================
 # Create your views here.
 #========FUNCION DE REPRODUCIR EL AUDIO DEL BOT========
@@ -1933,8 +1935,26 @@ def cliente_reporte(request):
             pass
     except:
         return cerrarSesion_user(request)
-    archivo_excel = 'C:/Users/antho/3D Objects/sistema_canTV/cantv_sistema/hojas_excel/fallas_de_cantv.xlsx'
-    libro_excel = openpyxl.load_workbook(archivo_excel)
+
+    # --- CAMBIO CLAVE AQUÍ ---
+    # Usa la ruta definida en settings.py para construir la ruta al archivo Excel
+    excel_file_name = 'fallas_de_cantv.xlsx'
+    # Combina el directorio base de Excel con el nombre del archivo.
+    # Necesitas haber definido EXCEL_FILES_DIR en tu settings.py como:
+    # EXCEL_FILES_DIR = BASE_DIR / 'cantv_sistema' / 'hojas_excel'
+    try:
+        archivo_excel = settings.EXCEL_FILES_DIR / excel_file_name
+        libro_excel = openpyxl.load_workbook(archivo_excel)
+    except FileNotFoundError:
+        # Manejo de error específico si el archivo no se encuentra en el servidor
+        print(f"Error: El archivo {archivo_excel} no se encontró. Asegúrate de que esté en el repositorio.")
+        return HttpResponseServerError("Error interno: No se pudo cargar el archivo de configuración de fallas.")
+    except Exception as e:
+        # Manejo de cualquier otro error al cargar el Excel
+        print(f"Error al cargar el archivo Excel: {e}")
+        traceback.print_exc()
+        return HttpResponseServerError(f"Error interno al procesar el reporte: {e}")
+
     hoja_excel = libro_excel['fallas de cantv']
     datos = []
     datos1 = []
@@ -1961,37 +1981,49 @@ def cliente_reporte(request):
         if dato1 == "Seleccione falla":
             return render(request, 'modulos/cliente/generarReporte.html', {
                 'datos': datos,
-                  'datos1': datos1,
-                    'mensaje': 'Debe seleccionar una opción válida'
+                'datos1': datos1,
+                'mensaje': 'Debe seleccionar una opción válida',
+                "permisos":permisos_lista, # Asegúrate de pasar permisos_lista en todas las respuestas
+                'algo_mal': algo_mal
                 })
         elif dato1 == "Sin conexión a internet" and dato2 == "Indique la falla por desconexion de internet":
             return render(request, 'modulos/cliente/generarReporte.html', {
-                'datos': datos, 
-                'datos1': datos1, 
-                'mensaje': 'Debe seleccionar la información detallada de la falla'
+                'datos': datos,
+                'datos1': datos1,
+                'mensaje': 'Debe seleccionar la información detallada de la falla',
+                "permisos":permisos_lista,
+                'algo_mal': algo_mal
                 })
         elif dato1 == "Hida y venida de internet" and dato3 == "Indique la falla por hida y venida de internet":
             return render(request, 'modulos/cliente/generarReporte.html', {
-                'datos': datos, 
-                'datos1': datos1, 
-                'mensaje': 'Debe seleccionar la información detallada de la falla'
+                'datos': datos,
+                'datos1': datos1,
+                'mensaje': 'Debe seleccionar la información detallada de la falla',
+                "permisos":permisos_lista,
+                'algo_mal': algo_mal
                 })
         elif dato1 == "lento" and dato4 is None:
             return render(request, 'modulos/cliente/generarReporte.html', {
-                'datos': datos, 
-                'datos1': datos1, 'mensaje': 'Debe cargar una prueba de velocidad'
+                'datos': datos,
+                'datos1': datos1, 'mensaje': 'Debe cargar una prueba de velocidad',
+                "permisos":permisos_lista,
+                'algo_mal': algo_mal
                 })
         elif dato5 == "Seleccione la luz que vizualiza":
             return render(request, 'modulos/cliente/generarReporte.html', {
-                'datos': datos, 
-                'datos1': datos1, 
-                'mensaje': 'Debe elegir que color de luz tiene su modem'
+                'datos': datos,
+                'datos1': datos1,
+                'mensaje': 'Debe elegir que color de luz tiene su modem',
+                "permisos":permisos_lista,
+                'algo_mal': algo_mal
                 })
         elif not dato6:
             return render(request, 'modulos/cliente/generarReporte.html', {
-                'datos': datos, 
-                'datos1': datos1, 
-                'mensaje': 'Debe ingresar una descripcion'
+                'datos': datos,
+                'datos1': datos1,
+                'mensaje': 'Debe ingresar una descripcion',
+                "permisos":permisos_lista,
+                'algo_mal': algo_mal
                 })
         else:
             sesion = request.session.get('cedula')
@@ -2022,7 +2054,7 @@ def cliente_reporte(request):
                             description=dato6
                         )
                         reporteClientes.save()
-                        
+
                         nuevo_reporte_tecnico = reportesParaTecnico(
                             Datos_Cliente=instan_cli,
                             DatosReporteCliente=reporteClientes,
@@ -2069,7 +2101,7 @@ def cliente_reporte(request):
             elif dato1 == "Servicio Intermitente":
                 falla_reporte = dato3
                 tecnicos_disponibles = tecnico.objects.filter(estado=1,eliminado=False)
-                
+
                 if tecnicos_disponibles.exists():
                     tecnico_asignado = tecnicos_disponibles.first()
                     el_tipo = tipoReporte.objects.get(id=1)
@@ -2133,14 +2165,24 @@ def cliente_reporte(request):
                     )
                     reporteClientes.save()
 
-            else:
+            else: # Asumo que este 'else' maneja el caso de "internet lento"
                 falla_reporte = "internet lento"
-                # ===========VALIDACION DE LA IMAGEN DE TESTEOD E VELOCIDAD DE INTERNET==========
+                # ===========VALIDACION DE LA IMAGEN DE TESTEO DE VELOCIDAD DE INTERNET==========
                 valid_formats = ['jpg', 'jpeg', 'png']
 
                 # Verificar si la imagen cumple con los requisitos de formato y resolución
                 try:
-                    img_referencia = cv2.imread('media/imagen_validacion_testeo.png', 0)
+                    # La imagen de referencia debe estar en STATICFILES_DIRS o MEDIA_ROOT
+                    # o directamente en un path relativo a BASE_DIR
+                    # Asegúrate de que 'media/imagen_validacion_testeo.png' sea accesible en Render
+                    img_referencia_path = settings.MEDIA_ROOT / 'imagen_validacion_testeo.png' # Asumiendo que está en media
+                    if not img_referencia_path.exists():
+                        raise FileNotFoundError(f"Imagen de referencia no encontrada en: {img_referencia_path}")
+
+                    img_referencia = cv2.imread(str(img_referencia_path), 0)
+                    if img_referencia is None:
+                        raise ValueError(f"No se pudo cargar la imagen de referencia desde: {img_referencia_path}")
+
                     img_nueva = cv2.imdecode(np.frombuffer(dato4.read(), np.uint8), cv2.IMREAD_GRAYSCALE)
                     img_nueva = cv2.resize(img_nueva, (img_referencia.shape[1], img_referencia.shape[0]))
                     img_format = dato4.name.split('.')[-1].lower()
@@ -2148,22 +2190,26 @@ def cliente_reporte(request):
                     if img_format not in valid_formats:
                         return render(request, 'modulos/cliente/generarReporte.html', {
                             'mensaje': 'El formato de imagen no es válido',
-                            'datos': datos, 
-                            'datos1': datos1
+                            'datos': datos,
+                            'datos1': datos1,
+                            "permisos":permisos_lista,
+                            'algo_mal': algo_mal
                             })
-                    
+
                     ssim_score = ssim(img_referencia, img_nueva, full=True)[0]
                     umbral_similitud = 0.6
 
                     if ssim_score < umbral_similitud:
                         return render(request, 'modulos/cliente/generarReporte.html', {
                             'mensaje': 'La imagen no forma parte del testeo de cantv',
-                            'datos': datos, 
-                            'datos1': datos1
+                            'datos': datos,
+                            'datos1': datos1,
+                            "permisos":permisos_lista,
+                            'algo_mal': algo_mal
                             })
                     else:
                         tecnicos_disponibles = tecnico.objects.filter(estado=1,eliminado=False)
-                        
+
                         if tecnicos_disponibles.exists():
                             tecnico_asignado = tecnicos_disponibles.first()
                             el_tipo = tipoReporte.objects.get(id=1)
@@ -2230,10 +2276,13 @@ def cliente_reporte(request):
                     traceback.print_exc()
                     error_message = str(e)
                     return render(request, 'modulos/cliente/generarReporte.html', {
-                        'mensaje': f'Error al procesar la imagen: {error_message}'
+                        'mensaje': f'Error al procesar la imagen: {error_message}',
+                        'datos': datos,
+                        'datos1': datos1,
+                        "permisos":permisos_lista,
+                        'algo_mal': algo_mal
                         })
 
-                
             # Generar el código QR con la información del reporte
             qr = qrcode.QRCode(version=1, box_size=10, border=5)
             qr.add_data(f"Cliente: {cedula}, Categoría: {dato1}, Falla: {falla_reporte}")
@@ -2248,19 +2297,20 @@ def cliente_reporte(request):
 
             # Redirigir al usuario a una página de éxito o a cualquier otra página deseada
             return render(request,'modulos/cliente/generarReporte.html',{
-                'datos': datos, 
-                'datos1': datos1, 
+                'datos': datos,
+                'datos1': datos1,
                 'mensaje1': 'reporte enviado con exito',
                 "permisos":permisos_lista,
                 'algo_mal': algo_mal
                 })
 
     return render(request, 'modulos/cliente/generarReporte.html', {
-        'datos': datos, 
+        'datos': datos,
         'datos1': datos1,
         "permisos":permisos_lista,
         'algo_mal': algo_mal
         })
+
 
 def historial_reporte(request):
     id_cli_sessi = request.session.get('identificador')

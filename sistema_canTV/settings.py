@@ -142,3 +142,6 @@ LANGUAGES = [
     ('es', 'Español'),
     ('es-latam', 'Español (Latinoamérica)'),
 ]
+
+# Directorio para archivos de Excel (plantillas, etc.)
+EXCEL_FILES_DIR = BASE_DIR / 'cantv_sistema' / 'hojas_excel'
